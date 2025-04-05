@@ -6,7 +6,7 @@ import pydeck as pdk
 def main():
     # Use image from web_images directory
     image_path = os.path.join("web_images", "home_banner.jpg")
-    st.image(image_path, use_container_width=True)
+    st.image(image_path)
 
     st.markdown("<h1 style='text-align: center; color: #1E90FF;'>Plane N Simple ✈️</h1>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center;'>Find airports and book flights with ease!</h3>", unsafe_allow_html=True)
