@@ -1,4 +1,6 @@
 altair==4.2.0
+argon2-cffi>=23.1.0
+argon2-cffi-bindings>=21.2.0
 asttokens==2.0.8
 attrs==22.1.0
 backcall==0.2.0
