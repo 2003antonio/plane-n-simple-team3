@@ -1,7 +1,3 @@
-Here's an updated version of your `README.md` to reflect the current status of your **Plane-n-Simple** project, and to guide your team on how to pull and work on the project:
-
----
-
 # Plane-n-Simple ✈️
 
 Plane-n-Simple is a Streamlit web application that helps users **find airports** and **search for flights** easily. The app features an interactive map of global airports and a simple interface for searching flights and managing user profiles.
