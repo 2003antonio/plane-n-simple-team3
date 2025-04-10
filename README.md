@@ -4,7 +4,7 @@ Plane-n-Simple is a Streamlit web application that helps users **find airports**
 
 ## 🚀 Live Deployment
 
-[Click here to access our live deployed website!](https://plane-n-simple-team3-software-engineering.streamlit.app/)
+[Click here to access our live deployed website!](https://plane-n-simple-team3-software-engineering.streamlit.app/](https://plane-n-simple-team3-func.streamlit.app/)
 
 ## 📁 Project Structure
 
