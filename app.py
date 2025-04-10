@@ -45,6 +45,12 @@ def firebase_signup(email, password):
     res = requests.post(url, json=payload)
     return res.json()
 
+def firebase_reset_password(email):
+    url = f"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={FIREBASE_API_KEY}"
+    payload = {"requestType": "PASSWORD_RESET", "email": email}
+    res = requests.post(url, json=payload)
+    return res.json()
+
 # Session state
 if "login" not in st.session_state:
     st.session_state.login = False
@@ -55,7 +61,13 @@ def login_form():
         st.subheader("🔐 Login")
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
-        if st.form_submit_button("Login"):
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            login = st.form_submit_button("Login")
+        with col2:
+            reset = st.form_submit_button("Forgot Password")
+
+        if login:
             result = firebase_login(email, password)
             if "idToken" in result:
                 st.session_state.login = True
@@ -63,9 +75,15 @@ def login_form():
                 st.session_state.uid = result["localId"]
                 st.success("Logged in successfully! Please click 'Run' or refresh manually.")
                 st.rerun()
-                #st.stop()  # Ends the script run so the UI can reflect login state
             else:
                 st.error(result.get("error", {}).get("message", "Login failed"))
+
+        if reset:
+            result = firebase_reset_password(email)
+            if "email" in result:
+                st.success(f"Password reset email sent to {email}!")
+            else:
+                st.error(result.get("error", {}).get("message", "Password reset failed"))
 
 # Signup Form
 def signup_form():
@@ -107,6 +125,11 @@ else:
         st.write(f"Logged in as: {name}")
 
     with st.sidebar:
+        if st.button("Logout of Account 🚪"):
+            for key in ["login", "email", "uid"]:
+                st.session_state.pop(key, None)
+            st.rerun()
+
         selected = option_menu(
             menu_title="Plane N Simple",
             options=["Home", "Flight Search", "Profile"],
