@@ -1,38 +1,65 @@
+# profile_page.py
 import streamlit as st
-import json
-import os
+import firebase_admin
+from firebase_admin import db as realtimedb
+from PIL import Image
+import base64
+import io
+
+# Show user profile
 
 def main():
     st.title("👤 User Profile")
 
-    username = st.session_state.get("username")
-    if not username:
-        st.warning("No user logged in.")
+    uid = st.session_state.get("uid")
+    if not uid:
+        st.warning("No user is currently logged in.")
         return
 
-    # Load user data from secrets.json
-    user_data_path = "_secret_auth_.json"  # Update path if needed
-    if not os.path.exists(user_data_path):
-        st.error("User data not found.")
+    user_ref = realtimedb.reference(f"users/{uid}")
+    user_data = user_ref.get()
+
+    if not user_data:
+        st.error("User data could not be loaded.")
         return
 
-    with open(user_data_path, "r") as f:
-        users = json.load(f)
+    # Display profile picture from session or firebase
+    profile_pic_bytes = st.session_state.get("profile_pic")
+    if profile_pic_bytes:
+        b64 = base64.b64encode(profile_pic_bytes).decode()
+        st.markdown(f"""
+        <div style='display: flex; justify-content: center;'>
+            <img src='data:image/jpeg;base64,{b64}' style='width: 200px; height: 200px; object-fit: cover; border-radius: 50%;' />
+        </div>
+        """, unsafe_allow_html=True)
+    elif user_data.get("photo_url"):
+        st.markdown(f"""
+        <div style='display: flex; justify-content: center;'>
+            <img src='{user_data['photo_url']}' style='width: 200px; height: 200px; object-fit: cover; border-radius: 50%;' />
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.info("No profile picture uploaded.")
 
-    # Find current user
-    user = next((u for u in users if u["username"] == username), None)
-    if not user:
-        st.error("User not found in database.")
-        return
+    # Display and edit user info
+    full_name = st.text_input("Full Name", value=user_data.get("full_name", ""))
+    phone = st.text_input("Phone Number", value=user_data.get("phone", ""))
 
-    # Show user data (except password)
-    full_name = st.text_input("Full Name", value=user.get("name", ""))
-    email = st.text_input("Email", value=user.get("email", ""), disabled=True)
-    phone = st.text_input("Phone Number", value=st.session_state.get("phone", ""))  # Optional
-
-    st.file_uploader("Upload Profile Picture", type=["jpg", "png"])
+    uploaded_file = st.file_uploader("Upload New Profile Picture", type=["png", "jpg", "jpeg"])
 
     if st.button("Save Changes"):
-        st.session_state["phone"] = phone
-        st.session_state["name"] = full_name
-        st.success("Profile updated successfully!")
+        update_data = {
+            "full_name": full_name,
+            "phone": phone
+        }
+
+        if uploaded_file:
+            bytes_data = uploaded_file.read()
+            st.session_state["profile_pic"] = bytes_data
+            update_data["photo_url"] = "local-uploaded"
+
+        user_ref.update(update_data)
+        st.success("Profile updated in our database!")
+
+if __name__ == "__main__":
+    main()
