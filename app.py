@@ -7,6 +7,8 @@ from firebase_admin import credentials, db as realtimedb
 import home
 import flight_search
 import profile_page
+import time
+import os
 
 # Firebase Config from Streamlit secrets
 firebase_config = st.secrets["firebase"]
@@ -16,14 +18,13 @@ FIREBASE_DB_URL = firebase_config["databaseURL"]
 # Initialize Firebase Admin
 if not firebase_admin._apps:
     cred = credentials.Certificate({
-        "type": "service_account",
-        "project_id": firebase_config["projectId"],
+        "type": firebase_config["type"],
+        "project_id": firebase_config["project_id"],
         "private_key_id": firebase_config["private_key_id"],
-        "private_key": firebase_config["private_key"].replace('\\n', '\n'),
+        "private_key": firebase_config["private_key"].replace('\n', '\n'),
         "client_email": firebase_config["client_email"],
-        "client_id": firebase_config["client_id"],
         "auth_uri": firebase_config["auth_uri"],
-        "token_uri": firebase_config["client_id"],
+        "token_uri": firebase_config["token_uri"],
         "auth_provider_x509_cert_url": firebase_config["auth_provider_x509_cert_url"],
         "client_x509_cert_url": firebase_config["client_x509_cert_url"]
     })
@@ -60,8 +61,9 @@ def login_form():
                 st.session_state.login = True
                 st.session_state.email = email
                 st.session_state.uid = result["localId"]
-                st.success("Logged in successfully!")
-                st.experimental_rerun()
+                st.success("Logged in successfully! Please click 'Run' or refresh manually.")
+                st.rerun()
+                #st.stop()  # Ends the script run so the UI can reflect login state
             else:
                 st.error(result.get("error", {}).get("message", "Login failed"))
 
