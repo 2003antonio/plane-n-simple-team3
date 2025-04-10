@@ -1,4 +1,5 @@
 streamlit
+streamlit-option-menu
 firebase_admin
 protobuf==3.20.3
 grpcio==1.54.3
