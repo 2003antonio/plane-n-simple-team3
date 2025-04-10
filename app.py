@@ -22,9 +22,9 @@ if not firebase_admin._apps:
         "private_key": firebase_config["private_key"].replace('\\n', '\n'),
         "client_email": firebase_config["client_email"],
         "client_id": firebase_config["client_id"],
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "auth_uri": firebase_config["auth_uri"],
+        "token_uri": firebase_config["client_id"],
+        "auth_provider_x509_cert_url": firebase_config["auth_provider_x509_cert_url"],
         "client_x509_cert_url": firebase_config["client_x509_cert_url"]
     })
     firebase_admin.initialize_app(cred, {
