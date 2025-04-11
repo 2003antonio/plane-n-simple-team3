@@ -1,7 +1,5 @@
-# flight_search.py
 import streamlit as st
 import pandas as pd
-import requests
 from datetime import date
 
 def load_airports():
@@ -29,26 +27,6 @@ def get_mock_flights(origin, destination, travel_date):
         }
     ]
 
-def get_real_time_flights():
-    try:
-        api_key = st.secrets["aviationstack"]["api_key"]
-    except KeyError:
-        st.warning("⚠️ AviationStack API key not found in secrets. Using demo data.")
-        return []
-
-    url = "http://api.aviationstack.com/v1/flights"
-    params = {"access_key": api_key, "limit": 100}
-    res = requests.get(url, params=params)
-    
-    if res.status_code == 200:
-        return res.json().get("data", [])
-    elif res.status_code == 403:
-        st.error("❌ API access forbidden. Check your API key or plan limitations.")
-        return []
-    else:
-        st.error(f"❌ API error: {res.status_code}")
-        return []
-
 def main():
     st.title("✈️ Plane N Simple: Flight Search")
 
@@ -70,40 +48,29 @@ def main():
         origin_code = origin_row["iata_code"]
         dest_code = dest_row["iata_code"]
 
-        with st.spinner("Fetching real-time flights..."):
-            flights = get_real_time_flights()
+        st.markdown(f"#### Results for {travel_date.strftime('%m/%d/%Y')}")
 
-            matching_flights = [
-                f for f in flights
-                if f.get("departure", {}).get("iata") == origin_code and
-                   f.get("arrival", {}).get("iata") == dest_code
-            ]
+        mock_flights = get_mock_flights(origin_display, destination_display, travel_date)
 
-            st.markdown(f"#### Results for {travel_date.strftime('%m/%d/%Y')}")
+        for flight in mock_flights:
+            flight_code = flight.get("flight", {}).get("iata", "N/A")
+            airline = flight.get("airline", {}).get("name", "Unknown Airline")
+            dep_airport = flight.get("departure", {}).get("airport", "Unknown")
+            arr_airport = flight.get("arrival", {}).get("airport", "Unknown")
+            dep_time = flight.get("departure", {}).get("scheduled", "N/A")
+            arr_time = flight.get("arrival", {}).get("scheduled", "N/A")
+            status = flight.get("flight_status", "N/A")
 
-            if not matching_flights:
-                st.info("No live flights found. Showing sample flights instead (demo mode).")
-                matching_flights = get_mock_flights(origin_display, destination_display, travel_date)
-
-            for flight in matching_flights:
-                flight_code = flight.get("flight", {}).get("iata", "N/A")
-                airline = flight.get("airline", {}).get("name", "Unknown Airline")
-                dep_airport = flight.get("departure", {}).get("airport", "Unknown")
-                arr_airport = flight.get("arrival", {}).get("airport", "Unknown")
-                dep_time = flight.get("departure", {}).get("scheduled", "N/A")
-                arr_time = flight.get("arrival", {}).get("scheduled", "N/A")
-                status = flight.get("flight_status", "N/A")
-
-                st.markdown(f"""
-                **Flight:** {flight_code}  
-                **Airline:** {airline}  
-                **From:** {dep_airport}  
-                **To:** {arr_airport}  
-                **Departure:** {dep_time}  
-                **Arrival:** {arr_time}  
-                **Status:** {status}  
-                ---  
-                """)
+            st.markdown(f"""
+            **Flight:** {flight_code}  
+            **Airline:** {airline}  
+            **From:** {dep_airport}  
+            **To:** {arr_airport}  
+            **Departure:** {dep_time}  
+            **Arrival:** {arr_time}  
+            **Status:** {status}  
+            ---  
+            """)
 
 if __name__ == "__main__":
     main()
