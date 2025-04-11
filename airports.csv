@@ -1,134 +1,66 @@
-"Detroit Metropolitan Wayne County Airport, MI, USA",42.213249,-83.352859
-"Asheville Regional Airport, Fletcher, NC, USA",35.436077,-82.541298
-Baltimore/Washington International Thurgood Marshall Airport,39.17754,-76.668526
-"Boone County Regional Airport, AR, USA",36.264206,-93.154961
-"Borrego Valley Airport, Borrego Springs, CA, USA",33.257923,-116.321014
-"Boston Logan International Airport, MA, USA",42.365589,-71.010025
-"Canandaigua Airport - KIUA, Canandaigua, NY, USA",42.907768,-77.31897
-"Candy Kitchen Ranch Airport, Ramah, NM, USA",34.903271,-108.514519
-"Cape Girardeau Regional Airport, MO, USA",37.225136,-89.569305
-"Charlotte Douglas International Airport, Charlotte, NC, USA",35.21389,-80.943054
-"Cincinnati/Northern Kentucky International Airport (CVG), Hebron, KY, USA",39.053276,-84.663017
-"Dallas Love Field Airport, Dallas, TX, USA",32.848152,-96.851349
-"Dallas/Fort Worth International Airport, TX, USA",32.89748,-97.040443
-"Delta County Airport (ESC), Escanaba, MI, USA",45.719906,-87.09407
-"Denver International Airport, CO, USA",39.849312,-104.673828
-"Eagle Landing Airport LZ, Avinger, TX, USA",32.886677,-94.599251
-"Emerald Coast Aviation, Crestview, FL, USA",30.781055,-86.524994
-"Falcon Field Airport, Mesa, AZ, USA",33.457439,-111.727386
-"Fly Bart's, East Moriches, NY, the USA",40.822773,-72.748634
-"Fort Gordon, Augusta, GA, USA",33.420696,-82.152374
-"Fort Lauderdale-Hollywood International Airport, FL, USA",26.074215,-80.150726
-"George Bush Intercontinental Airport, TX, USA",29.993067,-95.341812
-"Greater Rochester International Airport, Rochester, NY, USA",43.128002,-77.665474
-"Gwinnett County Airport, GA, USA",33.975777,-83.963097
-"Harry Reid International Airport, NV, USA",36.083134,-115.148315
-"Harry Reid International Airport, NV, USA",36.08601,-115.153969
-"Hartsfield-Jackson Atlanta International Airport, Atlanta, GA, USA",33.640411,-84.419853
-"Hunter Army Airfield, Savannah, GA, USA",32.015644,-81.143127
-"John F. Kennedy International Airport, NY, USA",40.641766,-73.780968
-"John Wayne Airport (SNA), CA, USA",33.678925,-117.862869
-"Kenai Municipal Airport, Kenai, AK, USA",60.567402,-151.246719
-"Kotlik Airport (KOT), Kotlik, AK, USA",63.035789,-163.527863
-"Lackland AFB, San Antonio, TX, USA",29.384344,-98.618645
-"LaGuardia Airport, NY, USA",40.776863,-73.874069
-"Little Rock AFB, Jacksonville, AR, USA",34.914547,-92.142914
-"Los Angeles International Airport, USA",33.942791,-118.410042
-"Mc Donald Field, Marshville, NC, USA",35.053238,-80.409195
-"McGhee Tyson Airport (TYS), Alcoa, TN, USA",35.805813,-83.989815
-"Memphis International Airport, TN, USA",35.040031,-89.981873
-"Miami International Airport, FL, USA",25.79516,-80.279594
-"Michael Army Airfield (DPG), Utah, USA",40.199387,-112.937469
-"Milwaukee Mitchell International Airport, WI, USA",42.94989,-87.900414
-"Mineta San Jose International Airport (SJC), San Jose, CA, USA",37.363949,-121.92894
-"Muskogee-Davis Regional Airport, OK, USA",35.660957,-95.359558
-"Nashville International Airport (BNA), Nashville, TN, USA",36.131687,-86.668823
-"Newark Liberty International Airport, NJ, USA",40.689491,-74.174538
-"North Las Vegas Airport, NV, USA",36.213257,-115.194572
-"Northern Lights Airport, Alburgh, VT, USA",44.871201,-73.286491
-"O-Hare International Airport, Chicago, IL, USA",41.978611,-87.904724
-"Orlando International Airport, FL, USA",28.424618,-81.310753
-"Philadelphia International Airport, PA, USA",39.87294,-75.243988
-"Phoenix Sky Harbor International Airport, AZ, USA",33.435249,-112.010216
-"Pocatello Regional Airport, ID, USA",42.905575,-112.588776
-"Preston Smith International Airport, Lubbock, TX, USA",33.656384,-101.821861
-"San Diego International Airport (SAN), San Diego, CA, USA",32.73177,-117.197624
-"San Diego International Airport (SAN), San Diego, CA, USA",32.732346,-117.196053
-"San Francisco International Airport, USA",37.615223,-122.389977
-"Santa Fe Municipal Airport (SAF), Santa Fe, NM, USA",35.6175,-106.088333
-"Seattle-Tacoma International Airport, WA, USA",47.443546,-122.301659
-"Spruce Creek Airport, FL, USA",29.080168,-81.046669
-"St. George Regional Airport, UT, USA",37.030792,-113.508987
-"Tampa International Airport, Tampa, FL, USA",27.979168,-82.539337
-"Travis AFB, CA, USA",38.272118,-121.939857
-"Tucson International Airport, AZ, USA",32.116112,-110.941109
-"Unalakleet Airport, AK, USA",63.889515,-160.799927
-"Warrenton-Fauquier Airport (KHWY), Midland, VA, USA",38.592724,-77.711441
-"Wright-Patterson Air Force Base, OH, USA",39.819527,-84.067406
-"Detroit Metropolitan Wayne County Airport, MI, USA",42.213249,-83.352859
-"Asheville Regional Airport, Fletcher, NC, USA",35.436077,-82.541298
-Baltimore/Washington International Thurgood Marshall Airport,39.17754,-76.668526
-"Boone County Regional Airport, AR, USA",36.264206,-93.154961
-"Borrego Valley Airport, Borrego Springs, CA, USA",33.257923,-116.321014
-"Boston Logan International Airport, MA, USA",42.365589,-71.010025
-"Canandaigua Airport - KIUA, Canandaigua, NY, USA",42.907768,-77.31897
-"Candy Kitchen Ranch Airport, Ramah, NM, USA",34.903271,-108.514519
-"Cape Girardeau Regional Airport, MO, USA",37.225136,-89.569305
-"Charlotte Douglas International Airport, Charlotte, NC, USA",35.21389,-80.943054
-"Cincinnati/Northern Kentucky International Airport (CVG), Hebron, KY, USA",39.053276,-84.663017
-"Dallas Love Field Airport, Dallas, TX, USA",32.848152,-96.851349
-"Dallas/Fort Worth International Airport, TX, USA",32.89748,-97.040443
-"Delta County Airport (ESC), Escanaba, MI, USA",45.719906,-87.09407
-"Denver International Airport, CO, USA",39.849312,-104.673828
-"Eagle Landing Airport LZ, Avinger, TX, USA",32.886677,-94.599251
-"Emerald Coast Aviation, Crestview, FL, USA",30.781055,-86.524994
-"Falcon Field Airport, Mesa, AZ, USA",33.457439,-111.727386
-"Fly Bart's, East Moriches, NY, the USA",40.822773,-72.748634
-"Fort Gordon, Augusta, GA, USA",33.420696,-82.152374
-"Fort Lauderdale-Hollywood International Airport, FL, USA",26.074215,-80.150726
-"George Bush Intercontinental Airport, TX, USA",29.993067,-95.341812
-"Greater Rochester International Airport, Rochester, NY, USA",43.128002,-77.665474
-"Gwinnett County Airport, GA, USA",33.975777,-83.963097
-"Harry Reid International Airport, NV, USA",36.083134,-115.148315
-"Harry Reid International Airport, NV, USA",36.08601,-115.153969
-"Hartsfield-Jackson Atlanta International Airport, Atlanta, GA, USA",33.640411,-84.419853
-"Hunter Army Airfield, Savannah, GA, USA",32.015644,-81.143127
-"John F. Kennedy International Airport, NY, USA",40.641766,-73.780968
-"John Wayne Airport (SNA), CA, USA",33.678925,-117.862869
-"Kenai Municipal Airport, Kenai, AK, USA",60.567402,-151.246719
-"Kotlik Airport (KOT), Kotlik, AK, USA",63.035789,-163.527863
-"Lackland AFB, San Antonio, TX, USA",29.384344,-98.618645
-"LaGuardia Airport, NY, USA",40.776863,-73.874069
-"Little Rock AFB, Jacksonville, AR, USA",34.914547,-92.142914
-"Los Angeles International Airport, USA",33.942791,-118.410042
-"Mc Donald Field, Marshville, NC, USA",35.053238,-80.409195
-"McGhee Tyson Airport (TYS), Alcoa, TN, USA",35.805813,-83.989815
-"Memphis International Airport, TN, USA",35.040031,-89.981873
-"Miami International Airport, FL, USA",25.79516,-80.279594
-"Michael Army Airfield (DPG), Utah, USA",40.199387,-112.937469
-"Milwaukee Mitchell International Airport, WI, USA",42.94989,-87.900414
-"Mineta San Jose International Airport (SJC), San Jose, CA, USA",37.363949,-121.92894
-"Muskogee-Davis Regional Airport, OK, USA",35.660957,-95.359558
-"Nashville International Airport (BNA), Nashville, TN, USA",36.131687,-86.668823
-"Newark Liberty International Airport, NJ, USA",40.689491,-74.174538
-"North Las Vegas Airport, NV, USA",36.213257,-115.194572
-"Northern Lights Airport, Alburgh, VT, USA",44.871201,-73.286491
-"O-Hare International Airport, Chicago, IL, USA",41.978611,-87.904724
-"Orlando International Airport, FL, USA",28.424618,-81.310753
-"Philadelphia International Airport, PA, USA",39.87294,-75.243988
-"Phoenix Sky Harbor International Airport, AZ, USA",33.435249,-112.010216
-"Pocatello Regional Airport, ID, USA",42.905575,-112.588776
-"Preston Smith International Airport, Lubbock, TX, USA",33.656384,-101.821861
-"San Diego International Airport (SAN), San Diego, CA, USA",32.73177,-117.197624
-"San Diego International Airport (SAN), San Diego, CA, USA",32.732346,-117.196053
-"San Francisco International Airport, USA",37.615223,-122.389977
-"Santa Fe Municipal Airport (SAF), Santa Fe, NM, USA",35.6175,-106.088333
-"Seattle-Tacoma International Airport, WA, USA",47.443546,-122.301659
-"Spruce Creek Airport, FL, USA",29.080168,-81.046669
-"St. George Regional Airport, UT, USA",37.030792,-113.508987
-"Tampa International Airport, Tampa, FL, USA",27.979168,-82.539337
-"Travis AFB, CA, USA",38.272118,-121.939857
-"Tucson International Airport, AZ, USA",32.116112,-110.941109
-"Unalakleet Airport, AK, USA",63.889515,-160.799927
-"Warrenton-Fauquier Airport (KHWY), Midland, VA, USA",38.592724,-77.711441
-"Wright-Patterson Air Force Base, OH, USA",39.819527,-84.067406
+name,latitude,longitude,iata_code,display_name
+"Detroit Metropolitan Wayne County Airport, MI, USA",42.213249,-83.352859,DTW," - Detroit Metropolitan Wayne County Airport, MI, USA"
+"Asheville Regional Airport, Fletcher, NC, USA",35.436077,-82.541298,AVL," - Asheville Regional Airport, Fletcher, NC, USA"
+"Baltimore/Washington International Thurgood Marshall Airport",39.17754,-76.668526,BWI," - Baltimore/Washington International Thurgood Marshall Airport"
+"Boone County Regional Airport, AR, USA",36.264206,-93.154961,HRO," - Boone County Regional Airport, AR, USA"
+"Borrego Valley Airport, Borrego Springs, CA, USA",33.257923,-116.321014,BOR," - Borrego Valley Airport, Borrego Springs, CA, USA"
+"Boston Logan International Airport, MA, USA",42.365589,-71.010025,BOS," - Boston Logan International Airport, MA, USA"
+"Canandaigua Airport - KIUA, Canandaigua, NY, USA",42.907768,-77.31897,IUA," - Canandaigua Airport - KIUA, Canandaigua, NY, USA"
+"Candy Kitchen Ranch Airport, Ramah, NM, USA",34.903271,-108.514519,Z94," - Candy Kitchen Ranch Airport, Ramah, NM, USA"
+"Cape Girardeau Regional Airport, MO, USA",37.225136,-89.569305,CGI," - Cape Girardeau Regional Airport, MO, USA"
+"Charlotte Douglas International Airport, Charlotte, NC, USA",35.21389,-80.943054,CLT," - Charlotte Douglas International Airport, Charlotte, NC, USA"
+"Cincinnati/Northern Kentucky International Airport (CVG), Hebron, KY, USA",39.053276,-84.663017,CVG,"CVG - Cincinnati/Northern Kentucky International Airport (CVG), Hebron, KY, USA"
+"Dallas Love Field Airport, Dallas, TX, USA",32.848152,-96.851349,DAL," - Dallas Love Field Airport, Dallas, TX, USA"
+"Dallas/Fort Worth International Airport, TX, USA",32.89748,-97.040443,DFW," - Dallas/Fort Worth International Airport, TX, USA"
+"Delta County Airport (ESC), Escanaba, MI, USA",45.719906,-87.09407,ESC,"ESC - Delta County Airport (ESC), Escanaba, MI, USA"
+"Denver International Airport, CO, USA",39.849312,-104.673828,DEN," - Denver International Airport, CO, USA"
+"Eagle Landing Airport LZ, Avinger, TX, USA",32.886677,-94.599251,6XS0," - Eagle Landing Airport LZ, Avinger, TX, USA"
+"Emerald Coast Aviation, Crestview, FL, USA",30.781055,-86.524994,79J," - Emerald Coast Aviation, Crestview, FL, USA"
+"Falcon Field Airport, Mesa, AZ, USA",33.457439,-111.727386,FFZ," - Falcon Field Airport, Mesa, AZ, USA"
+"Fly Bart's, East Moriches, NY, the USA",40.822773,-72.748634,7N2," - Fly Bart's, East Moriches, NY, the USA"
+"Fort Gordon, Augusta, GA, USA",33.420696,-82.152374,GBN," - Fort Gordon, Augusta, GA, USA"
+"Fort Lauderdale-Hollywood International Airport, FL, USA",26.074215,-80.150726,FLL," - Fort Lauderdale-Hollywood International Airport, FL, USA"
+"George Bush Intercontinental Airport, TX, USA",29.993067,-95.341812,IAH," - George Bush Intercontinental Airport, TX, USA"
+"Greater Rochester International Airport, Rochester, NY, USA",43.128002,-77.665474,ROC," - Greater Rochester International Airport, Rochester, NY, USA"
+"Gwinnett County Airport, GA, USA",33.975777,-83.963097,LZU," - Gwinnett County Airport, GA, USA"
+"Harry Reid International Airport, NV, USA",36.083134,-115.148315,LAS," - Harry Reid International Airport, NV, USA"
+"Hartsfield-Jackson Atlanta International Airport, Atlanta, GA, USA",33.640411,-84.419853,ATL," - Hartsfield-Jackson Atlanta International Airport, Atlanta, GA, USA"
+"Hunter Army Airfield, Savannah, GA, USA",32.015644,-81.143127,SVN," - Hunter Army Airfield, Savannah, GA, USA"
+"John F. Kennedy International Airport, NY, USA",40.641766,-73.780968,JFK," - John F. Kennedy International Airport, NY, USA"
+"John Wayne Airport (SNA), CA, USA",33.678925,-117.862869,SNA,"SNA - John Wayne Airport (SNA), CA, USA"
+"Kenai Municipal Airport, Kenai, AK, USA",60.567402,-151.246719,ENA," - Kenai Municipal Airport, Kenai, AK, USA"
+"Kotlik Airport (KOT), Kotlik, AK, USA",63.035789,-163.527863,KOT,"KOT - Kotlik Airport (KOT), Kotlik, AK, USA"
+"Lackland AFB, San Antonio, TX, USA",29.384344,-98.618645,SKF," - Lackland AFB, San Antonio, TX, USA"
+"LaGuardia Airport, NY, USA",40.776863,-73.874069,LGA," - LaGuardia Airport, NY, USA"
+"Little Rock AFB, Jacksonville, AR, USA",34.914547,-92.142914,LRF," - Little Rock AFB, Jacksonville, AR, USA"
+"Los Angeles International Airport, USA",33.942791,-118.410042,LAX," - Los Angeles International Airport, USA"
+"Mc Donald Field, Marshville, NC, USA",35.053238,-80.409195,NC79," - Mc Donald Field, Marshville, NC, USA"
+"McGhee Tyson Airport (TYS), Alcoa, TN, USA",35.805813,-83.989815,TYS,"TYS - McGhee Tyson Airport (TYS), Alcoa, TN, USA"
+"Memphis International Airport, TN, USA",35.040031,-89.981873,MEM," - Memphis International Airport, TN, USA"
+"Miami International Airport, FL, USA",25.79516,-80.279594,MIA," - Miami International Airport, FL, USA"
+"Michael Army Airfield (DPG), Utah, USA",40.199387,-112.937469,DPG,"DPG - Michael Army Airfield (DPG), Utah, USA"
+"Milwaukee Mitchell International Airport, WI, USA",42.94989,-87.900414,MKE," - Milwaukee Mitchell International Airport, WI, USA"
+"Mineta San Jose International Airport (SJC), San Jose, CA, USA",37.363949,-121.92894,SJC,"SJC - Mineta San Jose International Airport (SJC), San Jose, CA, USA"
+"Muskogee-Davis Regional Airport, OK, USA",35.660957,-95.359558,MKO," - Muskogee-Davis Regional Airport, OK, USA"
+"Nashville International Airport (BNA), Nashville, TN, USA",36.131687,-86.668823,BNA,"BNA - Nashville International Airport (BNA), Nashville, TN, USA"
+"Newark Liberty International Airport, NJ, USA",40.689491,-74.174538,EWR," - Newark Liberty International Airport, NJ, USA"
+"North Las Vegas Airport, NV, USA",36.213257,-115.194572,VGT," - North Las Vegas Airport, NV, USA"
+"Northern Lights Airport, Alburgh, VT, USA",44.871201,-73.286491,9B1," - Northern Lights Airport, Alburgh, VT, USA"
+"O-Hare International Airport, Chicago, IL, USA",41.978611,-87.904724,ORD," - O-Hare International Airport, Chicago, IL, USA"
+"Orlando International Airport, FL, USA",28.424618,-81.310753,MCO," - Orlando International Airport, FL, USA"
+"Philadelphia International Airport, PA, USA",39.87294,-75.243988,PHL," - Philadelphia International Airport, PA, USA"
+"Phoenix Sky Harbor International Airport, AZ, USA",33.435249,-112.010216,PHX," - Phoenix Sky Harbor International Airport, AZ, USA"
+"Pocatello Regional Airport, ID, USA",42.905575,-112.588776,PIH," - Pocatello Regional Airport, ID, USA"
+"Preston Smith International Airport, Lubbock, TX, USA",33.656384,-101.821861,LBB," - Preston Smith International Airport, Lubbock, TX, USA"
+"San Diego International Airport (SAN), San Diego, CA, USA",32.73177,-117.197624,SAN,"SAN - San Diego International Airport (SAN), San Diego, CA, USA"
+"San Francisco International Airport, USA",37.615223,-122.389977,SFO," - San Francisco International Airport, USA"
+"Santa Fe Municipal Airport (SAF), Santa Fe, NM, USA",35.6175,-106.088333,SAF,"SAF - Santa Fe Municipal Airport (SAF), Santa Fe, NM, USA"
+"Seattle-Tacoma International Airport, WA, USA",47.443546,-122.301659,SEA," - Seattle-Tacoma International Airport, WA, USA"
+"Spruce Creek Airport, FL, USA",29.080168,-81.046669,7FL6," - Spruce Creek Airport, FL, USA"
+"St. George Regional Airport, UT, USA",37.030792,-113.508987,SGU," - St. George Regional Airport, UT, USA"
+"Tampa International Airport, Tampa, FL, USA",27.979168,-82.539337,TPA," - Tampa International Airport, Tampa, FL, USA"
+"Travis AFB, CA, USA",38.272118,-121.939857,SUU," - Travis AFB, CA, USA"
+"Tucson International Airport, AZ, USA",32.116112,-110.941109,TUS," - Tucson International Airport, AZ, USA"
+"Unalakleet Airport, AK, USA",63.889515,-160.799927,UNK," - Unalakleet Airport, AK, USA"
+"Warrenton-Fauquier Airport (KHWY), Midland, VA, USA",38.592724,-77.711441,HWY," - Warrenton-Fauquier Airport (KHWY), Midland, VA, USA"
+"Wright-Patterson Air Force Base, OH, USA",39.819527,-84.067406,FFO," - Wright-Patterson Air Force Base, OH, USA"
