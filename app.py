@@ -28,7 +28,7 @@ if not firebase_admin._apps:
         "type": firebase_config["type"],
         "project_id": firebase_config["project_id"],
         "private_key_id": firebase_config["private_key_id"],
-        "private_key": firebase_config["private_key"].replace('\n', '\n'),
+        "private_key": firebase_config["private_key"],
         "client_email": firebase_config["client_email"],
         "auth_uri": firebase_config["auth_uri"],
         "token_uri": firebase_config["token_uri"],
