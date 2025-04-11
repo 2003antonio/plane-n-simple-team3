@@ -3,7 +3,6 @@ import pandas as pd
 import requests
 from datetime import date
 
-@st.cache_data
 def load_airports():
     df = pd.read_csv("airports.csv")
     df = df.dropna(subset=["iata_code"])
