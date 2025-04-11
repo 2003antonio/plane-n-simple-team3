@@ -7,8 +7,9 @@ from firebase_admin import credentials, db as realtimedb
 import home
 import flight_search
 import profile_page
-import time
-import os
+
+# Page config
+st.set_page_config(page_title="Plane N Simple", layout="wide")
 
 # Firebase Config from Streamlit secrets
 try:
@@ -56,6 +57,7 @@ def firebase_reset_password(email):
     payload = {"requestType": "PASSWORD_RESET", "email": email}
     res = requests.post(url, json=payload)
     return res.json()
+
 
 # Session state
 if "login" not in st.session_state:
@@ -112,8 +114,6 @@ def signup_form():
             else:
                 st.error(result.get("error", {}).get("message", "Signup failed"))
 
-# Page config
-#st.set_page_config(page_title="Plane N Simple", layout="wide")
 
 # Auth flow
 if not st.session_state.login:
