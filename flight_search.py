@@ -1,3 +1,4 @@
+# flight_search.py
 import streamlit as st
 import pandas as pd
 import requests
@@ -6,13 +7,8 @@ from datetime import date
 def load_airports():
     df = pd.read_csv("airports.csv")
     df = df.dropna(subset=["iata_code"])
-
-    # Clean display name: IATA - Airport Name
     df["display_name"] = df["iata_code"].str.upper() + " - " + df["name"].str.strip()
-
-    # Drop duplicate display names if any still exist
     df = df.drop_duplicates(subset=["display_name"])
-
     return df
 
 def get_mock_flights(origin, destination, travel_date):
@@ -34,10 +30,16 @@ def get_mock_flights(origin, destination, travel_date):
     ]
 
 def get_real_time_flights():
-    api_key = st.secrets["aviationstack"]["api_key"]
+    try:
+        api_key = st.secrets["aviationstack"]["api_key"]
+    except KeyError:
+        st.warning("⚠️ AviationStack API key not found in secrets. Using demo data.")
+        return []
+
     url = "http://api.aviationstack.com/v1/flights"
     params = {"access_key": api_key, "limit": 100}
     res = requests.get(url, params=params)
+    
     if res.status_code == 200:
         return res.json().get("data", [])
     elif res.status_code == 403:
@@ -51,17 +53,13 @@ def main():
     st.title("✈️ Plane N Simple: Flight Search")
 
     airports_df = load_airports()
-
     st.markdown("### 🔍 Select Your Route")
 
     col1, col2, col3 = st.columns([1, 1, 1])
-
     with col1:
         origin_display = st.selectbox("Departure Airport", airports_df["display_name"])
-
     with col3:
         travel_date = st.date_input("Select Travel Date", min_value=date.today())
-
     with col2:
         destination_display = st.selectbox("Destination Airport", airports_df["display_name"])
         search_clicked = st.button("Search Flights", use_container_width=True)

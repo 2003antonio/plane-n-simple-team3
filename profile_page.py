@@ -2,14 +2,10 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import db as realtimedb
-from PIL import Image
-import base64
-import io
-
-# Show user profile
+import urllib.parse
 
 def main():
-    st.title("👤 User Profile")
+    st.markdown("<h1 style='text-align: center;'>👤 User Profile</h1>", unsafe_allow_html=True)
 
     uid = st.session_state.get("uid")
     if not uid:
@@ -23,42 +19,47 @@ def main():
         st.error("User data could not be loaded.")
         return
 
-    # Display profile picture from session or firebase
-    profile_pic_bytes = st.session_state.get("profile_pic")
-    if profile_pic_bytes:
-        b64 = base64.b64encode(profile_pic_bytes).decode()
-        st.markdown(f"""
-        <div style='display: flex; justify-content: center;'>
-            <img src='data:image/jpeg;base64,{b64}' style='width: 200px; height: 200px; object-fit: cover; border-radius: 50%;' />
-        </div>
-        """, unsafe_allow_html=True)
-    elif user_data.get("photo_url"):
-        st.markdown(f"""
-        <div style='display: flex; justify-content: center;'>
-            <img src='{user_data['photo_url']}' style='width: 200px; height: 200px; object-fit: cover; border-radius: 50%;' />
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.info("No profile picture uploaded.")
+    full_name = user_data.get("full_name", "User")
+    phone = user_data.get("phone", "")
+    email = user_data.get("email", "Not provided")
 
-    # Display and edit user info
-    full_name = st.text_input("Full Name", value=user_data.get("full_name", ""))
-    phone = st.text_input("Phone Number", value=user_data.get("phone", ""))
+    initials = "".join([part[0] for part in full_name.split() if part]).upper()
+    encoded_initials = urllib.parse.quote_plus(initials)
 
-    uploaded_file = st.file_uploader("Upload New Profile Picture", type=["png", "jpg", "jpeg"])
+    # Always use fallback avatar based on initials
+    avatar_src = f"https://ui-avatars.com/api/?name={encoded_initials}&size=200&background=cccccc&color=555555&rounded=true"
+
+    # Show avatar
+    st.markdown(f"""
+        <style>
+            .avatar-container {{
+                display: flex;
+                justify-content: center;
+                margin-bottom: 20px;
+            }}
+            .avatar-img {{
+                width: 200px;
+                height: 200px;
+                object-fit: cover;
+                border-radius: 50%;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }}
+        </style>
+        <div class="avatar-container">
+            <img src="{avatar_src}" class="avatar-img" />
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Show read-only and editable fields
+    st.text_input("Email", value=email, disabled=True)
+    updated_name = st.text_input("Full Name", value=full_name)
+    updated_phone = st.text_input("Phone Number", value=phone)
 
     if st.button("Save Changes"):
-        update_data = {
-            "full_name": full_name,
-            "phone": phone
-        }
-
-        if uploaded_file:
-            bytes_data = uploaded_file.read()
-            st.session_state["profile_pic"] = bytes_data
-            update_data["photo_url"] = "local-uploaded"
-
-        user_ref.update(update_data)
+        user_ref.update({
+            "full_name": updated_name,
+            "phone": updated_phone
+        })
         st.success("Profile updated in our database!")
 
 if __name__ == "__main__":
