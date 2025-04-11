@@ -7,3 +7,6 @@ pydeck
 pandas
 requests>=2.31.0
 requests-toolbelt
+urllib3>=2.0.0
+typing-extensions>=4.0.0
+toml
