@@ -11,7 +11,13 @@ import time
 import os
 
 # Firebase Config from Streamlit secrets
-firebase_config = st.secrets["firebase"]
+try:
+    firebase_config = st.secrets["firebase"]
+    st.toast("✅ Firebase config loaded.")
+except Exception as e:
+    st.error(f"❌ Firebase config failed: {e}")
+    st.stop()
+
 FIREBASE_API_KEY = firebase_config["apiKey"]
 FIREBASE_DB_URL = firebase_config["databaseURL"]
 
@@ -107,7 +113,7 @@ def signup_form():
                 st.error(result.get("error", {}).get("message", "Signup failed"))
 
 # Page config
-st.set_page_config(page_title="Plane N Simple", layout="wide")
+#st.set_page_config(page_title="Plane N Simple", layout="wide")
 
 # Auth flow
 if not st.session_state.login:
