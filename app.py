@@ -1,12 +1,15 @@
-# app.py
 import streamlit as st
 from streamlit_option_menu import option_menu
 import requests
 import firebase_admin
 from firebase_admin import credentials, db as realtimedb
+import pandas as pd
+
+# Internal modules
 import home
 import flight_search
 import profile_page
+import poi_search 
 
 # Page config
 st.set_page_config(page_title="Plane N Simple", layout="wide")
@@ -109,7 +112,7 @@ def signup_form():
                     "email": email,
                     "full_name": full_name,
                     "phone": phone,
-                    "admin": False  # admin flag, change this value in firebase or admin page
+                    "admin": False  # default admin flag
                 })
                 st.success("Account created! You can log in now.")
             else:
@@ -129,7 +132,6 @@ else:
     if uid:
         user_data = realtimedb.reference(f"users/{uid}").get()
         name = user_data.get("full_name", "User") if user_data else "User"
-        ## is_admin
         is_admin = user_data.get("admin", False) if user_data else False
         st.write(f"Logged in as: {name}")
 
@@ -139,9 +141,9 @@ else:
                 st.session_state.pop(key, None)
             st.rerun()
 
-        # Adjust Menu based on role
-        menu_options = ["Home", "Flight Search", "Profile"]
-        menu_icons = ["house", "search", "person-circle"]
+        # Adjust menu dynamically
+        menu_options = ["Home", "Flight Search", "POI Search", "Profile"]
+        menu_icons = ["house", "search", "map", "person-circle"]
 
         if is_admin:
             menu_options.append("Admin")
@@ -155,13 +157,15 @@ else:
             default_index=0,
         )
 
+    # Page Routing
     if selected == "Home":
         home.main()
     elif selected == "Flight Search":
         flight_search.main()
+    elif selected == "POI Search":
+        poi_search.main()
     elif selected == "Profile":
         profile_page.main()
-    ##Admin page link
     elif selected == "Admin":
         import admin_page
         admin_page.main()
