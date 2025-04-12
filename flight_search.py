@@ -31,7 +31,7 @@ def main():
     st.title("✈️ Plane N Simple: Flight Search")
 
     airports_df = load_airports()
-    st.markdown("### 🔍 Select Your Route")
+    st.markdown("## 🔍 Select Your Route")
 
     col1, col2, col3 = st.columns([1, 1, 1])
     with col1:

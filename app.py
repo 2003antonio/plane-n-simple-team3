@@ -128,6 +128,8 @@ else:
     if uid:
         user_data = realtimedb.reference(f"users/{uid}").get()
         name = user_data.get("full_name", "User") if user_data else "User"
+        ## is_admin
+        is_admin = user_data.get("admin", False) if user_data else False
         st.write(f"Logged in as: {name}")
 
     with st.sidebar:
@@ -136,10 +138,18 @@ else:
                 st.session_state.pop(key, None)
             st.rerun()
 
+        # Adjust Menu based on role
+        menu_options = ["Home", "Flight Search", "Profile"]
+        menu_icons = ["house", "search", "person-circle"]
+
+        if is_admin:
+            menu_options.append("Admin")
+            menu_icons.append("shield-lock")
+
         selected = option_menu(
             menu_title="Plane N Simple",
-            options=["Home", "Flight Search", "Profile"],
-            icons=["house", "search", "person-circle"],
+            options=menu_options,
+            icons=menu_icons,
             menu_icon="airplane",
             default_index=0,
         )
@@ -150,3 +160,7 @@ else:
         flight_search.main()
     elif selected == "Profile":
         profile_page.main()
+    ##Admin page link
+    elif selected == "Admin":
+        import admin_page
+        admin_page.main()
