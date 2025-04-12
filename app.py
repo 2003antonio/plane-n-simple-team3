@@ -108,7 +108,8 @@ def signup_form():
                 realtimedb.reference(f"users/{uid}").set({
                     "email": email,
                     "full_name": full_name,
-                    "phone": phone
+                    "phone": phone,
+                    "admin": False  # admin flag, change this value in firebase or admin page
                 })
                 st.success("Account created! You can log in now.")
             else:
