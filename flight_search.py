@@ -10,6 +10,7 @@ def load_airports():
     df = df.drop_duplicates(subset=["display_name"])
     return df
 
+
 def get_mock_flights(origin, destination, travel_date):
     return [
         {
@@ -73,6 +74,7 @@ def search_amadeus_flights(origin_code, dest_code, travel_date):
         st.error(f"❌ Flight search failed: {res.status_code}")
         return []
 
+
 def get_sort_key(option):
     def sort_key(offer):
         segment = offer["itineraries"][0]["segments"][0]
@@ -96,6 +98,7 @@ def main():
         st.error("⚠️ Failed to load airports.csv")
         st.exception(e)
         return
+
 
     with st.container():
         st.subheader("🔍 Select Your Route")
@@ -170,3 +173,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
