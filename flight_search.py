@@ -10,24 +10,6 @@ def load_airports():
     df = df.drop_duplicates(subset=["display_name"])
     return df
 
-def get_mock_flights(origin, destination, travel_date):
-    return [
-        {
-            "flight": {"iata": "PS123"},
-            "airline": {"name": "Plane N Simple Airlines"},
-            "departure": {"airport": origin, "scheduled": f"{travel_date}T12:30:00"},
-            "arrival": {"airport": destination, "scheduled": f"{travel_date}T15:45:00"},
-            "flight_status": "scheduled"
-        },
-        {
-            "flight": {"iata": "PS456"},
-            "airline": {"name": "Demo Jetways"},
-            "departure": {"airport": origin, "scheduled": f"{travel_date}T18:00:00"},
-            "arrival": {"airport": destination, "scheduled": f"{travel_date}T21:05:00"},
-            "flight_status": "scheduled"
-        }
-    ]
-
 def get_amadeus_token():
     client_id = st.secrets["amadeus"]["client_id"]
     client_secret = st.secrets["amadeus"]["client_secret"]
@@ -112,21 +94,30 @@ def main():
 
         if st.button("🔎 Search Flights", use_container_width=True):
             origin_row = airports_df[airports_df["display_name"] == origin_display].iloc[0]
-            dest_row = airports_df[airports_df["display_name"] == destination_display].iloc[0]
             origin_code = origin_row["iata_code"]
-            dest_code = dest_row["iata_code"]
+            dest_code = "ZZZ" if not strict_match else airports_df[airports_df["display_name"] == destination_display].iloc[0]["iata_code"]
 
             flights = search_amadeus_flights(origin_code, dest_code, travel_date)
+
             if not flights:
-                st.info("⚠️ No live flights found. Showing mock/demo flights.")
-                flights = get_mock_flights(origin_code, dest_code, travel_date)
+                st.warning("⚠️ No flights found for the selected route and date. Please try a different departure, destination, or travel date.")
+                return
 
             if strict_match:
                 flights = [
                     offer for offer in flights
                     if offer["itineraries"][0]["segments"][0]["departure"]["iataCode"] == origin_code and
-                    offer["itineraries"][0]["segments"][0]["arrival"]["iataCode"] == dest_code
+                       offer["itineraries"][0]["segments"][0]["arrival"]["iataCode"] == dest_code
                 ]
+            else:
+                flights = [
+                    offer for offer in flights
+                    if offer["itineraries"][0]["segments"][0]["departure"]["iataCode"] == origin_code
+                ]
+
+            if not flights:
+                st.warning("⚠️ No matching flights found based on your selection.")
+                return
 
             st.session_state.flights = flights
             st.session_state.origin_code = origin_code
@@ -139,7 +130,7 @@ def main():
         dest_code = st.session_state.dest_code
         travel_date = st.session_state.travel_date
 
-        st.markdown(f"### ✈️ Results for {travel_date.strftime('%b %d, %Y')} from *{origin_code}* to *{dest_code}*")
+        st.markdown(f"### ✈️ Results for {travel_date.strftime('%b %d, %Y')} from *{origin_code}*")
 
         if sort_option != "Select":
             reverse = sort_option in ["Price: High to Low", "Departure: Latest", "Arrival: Latest"]
@@ -159,12 +150,12 @@ def main():
 
             with st.container():
                 st.markdown(f"""
-                <div style="border: 1px solid #ccc; border-radius: 12px; padding: 15px; margin-bottom: 10px; background-color: #f9f9f9;">
-                    <h4 style="margin: 0;">🛫 {dep_code} → 🛬 {arr_code}</h4>
-                    <p style="margin: 5px 0;"><strong>Airline:</strong> {airline} &nbsp; | &nbsp; <strong>Aircraft:</strong> {aircraft}</p>
-                    <p style="margin: 5px 0;"><strong>Departure:</strong> {dep_time} &nbsp; | &nbsp; <strong>Arrival:</strong> {arr_time}</p>
-                    <p style="margin: 5px 0;"><strong>Duration:</strong> {duration}</p>
-                    <p style="margin: 5px 0; font-size: 1.2em;"><strong>💲Price:</strong> {price} {currency}</p>
+                <div style=\"border: 1px solid #ccc; border-radius: 12px; padding: 15px; margin-bottom: 10px; background-color: #f9f9f9;\">
+                    <h4 style=\"margin: 0;\">🛫 {dep_code} → 🛬 {arr_code}</h4>
+                    <p style=\"margin: 5px 0;\"><strong>Airline:</strong> {airline} &nbsp; | &nbsp; <strong>Aircraft:</strong> {aircraft}</p>
+                    <p style=\"margin: 5px 0;\"><strong>Departure:</strong> {dep_time} &nbsp; | &nbsp; <strong>Arrival:</strong> {arr_time}</p>
+                    <p style=\"margin: 5px 0;\"><strong>Duration:</strong> {duration}</p>
+                    <p style=\"margin: 5px 0; font-size: 1.2em;\"><strong>💲Price:</strong> {price} {currency}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
