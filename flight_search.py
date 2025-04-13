@@ -29,7 +29,6 @@ def get_mock_flights(origin, destination, travel_date):
         }
     ]
 
-
 def get_amadeus_token():
     client_id = st.secrets["amadeus"]["client_id"]
     client_secret = st.secrets["amadeus"]["client_secret"]
@@ -48,7 +47,6 @@ def get_amadeus_token():
     else:
         st.error("❌ Failed to fetch Amadeus token")
         return None
-
 
 def search_amadeus_flights(origin_code, dest_code, travel_date):
     token = get_amadeus_token()
@@ -77,71 +75,101 @@ def search_amadeus_flights(origin_code, dest_code, travel_date):
         return []
 
 
+def get_sort_key(option):
+    def sort_key(offer):
+        segment = offer["itineraries"][0]["segments"][0]
+        if option == "Price: Low to High" or option == "Price: High to Low":
+            return float(offer["price"]["total"])
+        elif option.startswith("Departure"):
+            return segment["departure"]["at"]
+        elif option.startswith("Arrival"):
+            return segment["arrival"]["at"]
+        elif option == "Airline Name":
+            return segment.get("carrierCode", "")
+    return sort_key
+
 def main():
     st.title("✈️ Plane N Simple: Flight Search")
-    st.write("🎯 App loaded")  # Confirms rendering is working
+    st.markdown("Search and compare real-time flights via Amadeus API")
 
     try:
         airports_df = load_airports()
-        st.markdown("## 🔍 Select Your Route")
     except Exception as e:
         st.error("⚠️ Failed to load airports.csv")
         st.exception(e)
         return
 
 
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col1:
-        origin_display = st.selectbox("Departure Airport", airports_df["display_name"])
-    with col3:
-        travel_date = st.date_input("Select Travel Date", min_value=date.today())
-    with col2:
-        destination_display = st.selectbox("Destination Airport", airports_df["display_name"])
-        search_clicked = st.button("Search Flights", use_container_width=True)
+    with st.container():
+        st.subheader("🔍 Select Your Route")
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col1:
+            origin_display = st.selectbox("Departure Airport", airports_df["display_name"])
+        with col2:
+            destination_display = st.selectbox("Destination Airport", airports_df["display_name"])
+        with col3:
+            travel_date = st.date_input("Travel Date", min_value=date.today())
 
-    if search_clicked:
-        origin_row = airports_df[airports_df["display_name"] == origin_display].iloc[0]
-        dest_row = airports_df[airports_df["display_name"] == destination_display].iloc[0]
-        origin_code = origin_row["iata_code"]
-        dest_code = dest_row["iata_code"]
+        sort_option = st.selectbox("Sort By", ["Select", "Price: Low to High", "Price: High to Low", "Departure: Earliest", "Departure: Latest", "Arrival: Earliest", "Arrival: Latest", "Airline Name"])
+        strict_match = st.checkbox("Enable Strict Match", value=True)
 
-        st.markdown(f"#### Results for {travel_date.strftime('%m/%d/%Y')}")
+        if st.button("🔎 Search Flights", use_container_width=True):
+            origin_row = airports_df[airports_df["display_name"] == origin_display].iloc[0]
+            dest_row = airports_df[airports_df["display_name"] == destination_display].iloc[0]
+            origin_code = origin_row["iata_code"]
+            dest_code = dest_row["iata_code"]
 
-        
-        flights = search_amadeus_flights(origin_code, dest_code, travel_date)
+            flights = search_amadeus_flights(origin_code, dest_code, travel_date)
+            if not flights:
+                st.info("⚠️ No live flights found. Showing mock/demo flights.")
+                flights = get_mock_flights(origin_code, dest_code, travel_date)
 
-        
-        if not flights:
-            st.info("No live flights found. Showing sample flights instead (demo mode).")
-            flights = get_mock_flights(origin_display, destination_display, travel_date)
+            if strict_match:
+                flights = [
+                    offer for offer in flights
+                    if offer["itineraries"][0]["segments"][0]["departure"]["iataCode"] == origin_code and
+                    offer["itineraries"][0]["segments"][0]["arrival"]["iataCode"] == dest_code
+                ]
 
-        
+            st.session_state.flights = flights
+            st.session_state.origin_code = origin_code
+            st.session_state.dest_code = dest_code
+            st.session_state.travel_date = travel_date
+
+    if "flights" in st.session_state:
+        flights = st.session_state.flights
+        origin_code = st.session_state.origin_code
+        dest_code = st.session_state.dest_code
+        travel_date = st.session_state.travel_date
+
+        st.markdown(f"### ✈️ Results for {travel_date.strftime('%b %d, %Y')} from *{origin_code}* to *{dest_code}*")
+
+        if sort_option != "Select":
+            reverse = sort_option in ["Price: High to Low", "Departure: Latest", "Arrival: Latest"]
+            flights.sort(key=get_sort_key(sort_option), reverse=reverse)
+
         for offer in flights:
-            itinerary = offer["itineraries"][0]
-            segment = itinerary["segments"][0]
-
+            segment = offer["itineraries"][0]["segments"][0]
             dep_code = segment["departure"]["iataCode"]
             arr_code = segment["arrival"]["iataCode"]
             dep_time = segment["departure"]["at"]
             arr_time = segment["arrival"]["at"]
-            airline = segment.get("carrierCode", "Unknown")
+            airline = segment.get("carrierCode", "Unknown Airline")
             duration = segment.get("duration", "N/A")
             aircraft = segment.get("aircraft", {}).get("code", "N/A")
             price = offer["price"]["total"]
             currency = offer["price"]["currency"]
 
-            st.markdown(f"""
-            **Airline:** {airline}  
-            **From:** {dep_code}  
-            **To:** {arr_code}  
-            **Departure:** {dep_time}  
-            **Arrival:** {arr_time}  
-            **Flight Duration:** {duration}  
-            **Aircraft:** {aircraft}  
-            **Price:** {price} {currency}  
-            ---
-            """)
-            
+            with st.container():
+                st.markdown(f"""
+                <div style="border: 1px solid #ccc; border-radius: 12px; padding: 15px; margin-bottom: 10px; background-color: #f9f9f9;">
+                    <h4 style="margin: 0;">🛫 {dep_code} → 🛬 {arr_code}</h4>
+                    <p style="margin: 5px 0;"><strong>Airline:</strong> {airline} &nbsp; | &nbsp; <strong>Aircraft:</strong> {aircraft}</p>
+                    <p style="margin: 5px 0;"><strong>Departure:</strong> {dep_time} &nbsp; | &nbsp; <strong>Arrival:</strong> {arr_time}</p>
+                    <p style="margin: 5px 0;"><strong>Duration:</strong> {duration}</p>
+                    <p style="margin: 5px 0; font-size: 1.2em;"><strong>💲Price:</strong> {price} {currency}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
