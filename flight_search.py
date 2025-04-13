@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import requests
 from datetime import date
 
 def load_airports():
@@ -8,6 +9,7 @@ def load_airports():
     df["display_name"] = df["iata_code"].str.upper() + " - " + df["name"].str.strip()
     df = df.drop_duplicates(subset=["display_name"])
     return df
+
 
 def get_mock_flights(origin, destination, travel_date):
     return [
@@ -27,11 +29,66 @@ def get_mock_flights(origin, destination, travel_date):
         }
     ]
 
+
+def get_amadeus_token():
+    client_id = st.secrets["amadeus"]["client_id"]
+    client_secret = st.secrets["amadeus"]["client_secret"]
+
+    url = "https://test.api.amadeus.com/v1/security/oauth2/token"
+    payload = {
+        "grant_type": "client_credentials",
+        "client_id": client_id,
+        "client_secret": client_secret
+    }
+
+    res = requests.post(url, data=payload)
+
+    if res.status_code == 200:
+        return res.json()["access_token"]
+    else:
+        st.error("❌ Failed to fetch Amadeus token")
+        return None
+
+
+def search_amadeus_flights(origin_code, dest_code, travel_date):
+    token = get_amadeus_token()
+    if not token:
+        return []
+
+    url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    params = {
+        "originLocationCode": origin_code,
+        "destinationLocationCode": dest_code,
+        "departureDate": travel_date.strftime("%Y-%m-%d"),
+        "adults": 1,
+        "currencyCode": "USD",
+        "travelClass": "ECONOMY"
+    }
+
+    res = requests.get(url, headers=headers, params=params)
+
+    if res.status_code == 200:
+        return res.json().get("data", [])
+    else:
+        st.error(f"❌ Flight search failed: {res.status_code}")
+        return []
+
+
 def main():
     st.title("✈️ Plane N Simple: Flight Search")
+    st.write("🎯 App loaded")  # Confirms rendering is working
 
-    airports_df = load_airports()
-    st.markdown("## 🔍 Select Your Route")
+    try:
+        airports_df = load_airports()
+        st.markdown("## 🔍 Select Your Route")
+    except Exception as e:
+        st.error("⚠️ Failed to load airports.csv")
+        st.exception(e)
+        return
+
 
     col1, col2, col3 = st.columns([1, 1, 1])
     with col1:
@@ -50,27 +107,42 @@ def main():
 
         st.markdown(f"#### Results for {travel_date.strftime('%m/%d/%Y')}")
 
-        mock_flights = get_mock_flights(origin_display, destination_display, travel_date)
+        
+        flights = search_amadeus_flights(origin_code, dest_code, travel_date)
 
-        for flight in mock_flights:
-            flight_code = flight.get("flight", {}).get("iata", "N/A")
-            airline = flight.get("airline", {}).get("name", "Unknown Airline")
-            dep_airport = flight.get("departure", {}).get("airport", "Unknown")
-            arr_airport = flight.get("arrival", {}).get("airport", "Unknown")
-            dep_time = flight.get("departure", {}).get("scheduled", "N/A")
-            arr_time = flight.get("arrival", {}).get("scheduled", "N/A")
-            status = flight.get("flight_status", "N/A")
+        
+        if not flights:
+            st.info("No live flights found. Showing sample flights instead (demo mode).")
+            flights = get_mock_flights(origin_display, destination_display, travel_date)
+
+        
+        for offer in flights:
+            itinerary = offer["itineraries"][0]
+            segment = itinerary["segments"][0]
+
+            dep_code = segment["departure"]["iataCode"]
+            arr_code = segment["arrival"]["iataCode"]
+            dep_time = segment["departure"]["at"]
+            arr_time = segment["arrival"]["at"]
+            airline = segment.get("carrierCode", "Unknown")
+            duration = segment.get("duration", "N/A")
+            aircraft = segment.get("aircraft", {}).get("code", "N/A")
+            price = offer["price"]["total"]
+            currency = offer["price"]["currency"]
 
             st.markdown(f"""
-            **Flight:** {flight_code}  
             **Airline:** {airline}  
-            **From:** {dep_airport}  
-            **To:** {arr_airport}  
+            **From:** {dep_code}  
+            **To:** {arr_code}  
             **Departure:** {dep_time}  
             **Arrival:** {arr_time}  
-            **Status:** {status}  
-            ---  
+            **Flight Duration:** {duration}  
+            **Aircraft:** {aircraft}  
+            **Price:** {price} {currency}  
+            ---
             """)
+            
 
 if __name__ == "__main__":
     main()
+
