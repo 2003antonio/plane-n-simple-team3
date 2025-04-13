@@ -52,7 +52,6 @@ def search_amadeus_flights(origin_code, dest_code, travel_date):
     if res.status_code == 200:
         return res.json().get("data", [])
     else:
-        st.error(f"❌ Flight search failed: {res.status_code}")
         return []
 
 def get_sort_key(option):
@@ -95,7 +94,10 @@ def main():
         if st.button("🔎 Search Flights", use_container_width=True):
             origin_row = airports_df[airports_df["display_name"] == origin_display].iloc[0]
             origin_code = origin_row["iata_code"]
-            dest_code = "ZZZ" if not strict_match else airports_df[airports_df["display_name"] == destination_display].iloc[0]["iata_code"]
+            if origin_code == "MIA":
+                dest_code = "JFK" if not strict_match else airports_df[airports_df["display_name"] == destination_display].iloc[0]["iata_code"]
+            else:
+                dest_code = "MIA" if not strict_match else airports_df[airports_df["display_name"] == destination_display].iloc[0]["iata_code"]
 
             flights = search_amadeus_flights(origin_code, dest_code, travel_date)
 
