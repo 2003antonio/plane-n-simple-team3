@@ -1,94 +1,97 @@
 import streamlit as st
 import requests
+import pydeck as pdk
 
-def get_access_token(api_key, api_secret):
-    """Obtain an OAuth2 token from Amadeus"""
-    url = "https://test.api.amadeus.com/v1/security/oauth2/token"
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = {
-        "grant_type": "client_credentials",
-        "client_id": api_key,
-        "client_secret": api_secret,
-    }
-    response = requests.post(url, headers=headers, data=data)
-    return response.json().get("access_token")
+API_KEY = "e3ecac128a684aec8e024128789e6d83"
 
-
-def get_city_coordinates(city, token):
-    """Convert a city name to coordinates using Amadeus location API"""
-    url = f"https://test.api.amadeus.com/v1/reference-data/locations?keyword={city}&subType=CITY"
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(url, headers=headers)
-    data = response.json()
+def get_city_coordinates(city_name):
+    """Geocode city to lat/lon using Geoapify."""
+    url = f"https://api.geoapify.com/v1/geocode/search?text={city_name}&limit=1&apiKey={API_KEY}"
     try:
-        lat = data["data"][0]["geoCode"]["latitude"]
-        lon = data["data"][0]["geoCode"]["longitude"]
+        res = requests.get(url)
+        res.raise_for_status()
+        feature = res.json()["features"][0]
+        lon, lat = feature["geometry"]["coordinates"]
         return lat, lon
-    except (KeyError, IndexError):
+    except Exception as e:
+        st.error(f"Geocoding failed: {e}")
         return None, None
 
-
-def get_pois(lat, lon, radius, token):
-    """Fetch POIs near given coordinates"""
+def get_pois(lat, lon, radius_m):
+    """Query Geoapify Places API with circle filter and broad category."""
     url = (
-        f"https://test.api.amadeus.com/v1/reference-data/locations/pois?"
-        f"latitude={lat}&longitude={lon}&radius={radius}"
+        "https://api.geoapify.com/v2/places"
+        f"?categories=commercial"
+        f"&filter=circle:{lon},{lat},{radius_m}"
+        f"&limit=50&apiKey={API_KEY}"
     )
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(url, headers=headers)
-    return response.json()
-
+    try:
+        res = requests.get(url)
+        res.raise_for_status()
+        return res.json().get("features", [])
+    except Exception as e:
+        st.error(f"POI search failed: {e}")
+        return []
 
 def main():
-    st.title("📍 Plane N Simple: POI Search")
-    st.markdown("Find cool places near your destination using Amadeus APIs!")
+    st.title("📍 Plane N Simple: POI Explorer")
+    st.markdown("Just enter a city and radius. See places on the map — no categories needed!")
 
-    st.markdown("## 🔍 Select Points of Interest")
-    with st.form("poi_search_form"):
-        st.subheader("Search Your City")
+    with st.form("poi_form"):
         city = st.text_input("Enter a city (e.g., Miami)")
-        radius = st.selectbox("Search radius (miles)", [5, 10, 20, 50], index=1)
-        submit = st.form_submit_button("Search")
+        radius_km = st.slider("Search radius (km)", 1, 20, 5)
+        submitted = st.form_submit_button("Search")
 
-    # Your Amadeus API Credentials
-    AMADEUS_API_KEY = "mHKnOUJ9Jya2vg2QYAJ6HGThcR7LxkcJ"
-    AMADEUS_API_SECRET = "XyO7mWlttW7YE1d6"
+    if not submitted or not city:
+        return
 
-    if submit:
-        if not city:
-            st.error("Please enter a city name.")
-            return
+    st.info("📍 Geocoding city...")
+    lat, lon = get_city_coordinates(city)
+    if not lat:
+        return
 
-        st.info(f"🔄 Getting access token...")
-        token = get_access_token(AMADEUS_API_KEY, AMADEUS_API_SECRET)
-        if not token:
-            st.error("Failed to get access token from Amadeus.")
-            return
+    st.success(f"Coordinates: ({lat:.5f}, {lon:.5f})")
 
-        st.info(f"📍 Looking up coordinates for **{city}**...")
-        lat, lon = get_city_coordinates(city, token)
-        if lat is None or lon is None:
-            st.error(f"Could not find coordinates for {city}.")
-            return
+    st.info("🔎 Getting places nearby...")
+    radius_m = int(radius_km * 1000)
+    pois = get_pois(lat, lon, radius_m)
 
-        st.success(f"Coordinates for {city}: ({lat}, {lon})")
-        st.info("📡 Searching for nearby points of interest...")
+    if not pois:
+        st.warning("No POIs found. Try a broader city or increase the radius.")
+        return
 
-        pois_response = get_pois(lat, lon, radius * 1.60934, token)  # 🔁 convert mi → km
-        pois = pois_response.get("data", [])
+    st.success(f"Found {len(pois)} places.")
 
-        if not pois:
-            st.warning("No POIs found for this location.")
-            return
+    poi_data = [{
+        "name": poi["properties"].get("name", "Unnamed"),
+        "lat": poi["geometry"]["coordinates"][1],
+        "lon": poi["geometry"]["coordinates"][0],
+    } for poi in pois]
 
+    poi_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=poi_data,
+        get_position=["lon", "lat"],
+        get_fill_color=[0, 0, 255, 160],
+        get_radius=60,
+        pickable=True
+    )
 
-        st.markdown(f"### 🧭 Points of Interest near {city}:")
-        for poi in pois:
-            name = poi.get("name", "Unnamed Place")
-            category = poi.get("category", "Unknown")
-            dist = poi.get("distance", "N/A")
-            st.markdown(f"- **{name}** ({category}) — `{dist} meters` away")
+    circle_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=[{"lon": lon, "lat": lat}],
+        get_position=["lon", "lat"],
+        get_radius=radius_m,
+        get_fill_color=[100, 200, 255, 40],
+        pickable=False
+    )
 
-# Run the app
+    st.pydeck_chart(pdk.Deck(
+        initial_view_state=pdk.ViewState(latitude=lat, longitude=lon, zoom=12),
+        layers=[circle_layer, poi_layer],
+        tooltip={"text": "{name}"},
+        map_style="mapbox://styles/mapbox/light-v9"
+    ))
+
 if __name__ == "__main__":
     main()
