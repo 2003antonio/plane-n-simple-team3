@@ -51,46 +51,55 @@ def main():
     st.markdown("## 🔍 Select Points of Interest")
 
     # Category mappings
-
-    categories = {
-        "accommodation": {
+    accommodation = {
         "accommodation.hotel": "Hotel",
         "accommodation.hostel": "Hostel",
         "accommodation.motel": "Motel"
-        },
-        "entertainment": {
-            "catering": "Catering",
-            "entertainment": "Entertainment"
-        },
-        "tourism": {
-            "tourism": "Tourism",
-            "activity": "Activity",
-            "leisure": "Leisure"
-        },
-        "commercial": {
-            "commercial": "Commercial"
-        },
-        "parks": {
-            "national_park": "National Park"
-        }
+    }
+    entertainment = {
+        "catering": "Catering",
+        "entertainment": "Entertainment"
+    }
+    tourism = {
+        "tourism": "Tourism",
+        "activity": "Activity",
+        "leisure": "Leisure"
+    }
+    commercial = {
+        "commercial": "Commercial"
+    }
+    parks = {
+        "national_park": "National Park"
     }
 
     # Category group selector (outside form so it refreshes)
     prev_selection = st.session_state.get("category_group", None)
     category_group = st.radio(
         "Select a category group",
-        ("All", "Accommodation", "Entertainment", "Tourism", "Commercial", "Parks"),
+        ("Accommodation", "Entertainment", "Tourism", "Commercial", "Parks"),
         key="category_group"
     )
 
     if prev_selection is not None and category_group != prev_selection:
         st.rerun()
 
-    if category_group == "All":
-        selected_categories = None
+    if category_group == "Accommodation":
+        selected = st.multiselect("Select Accommodation Types", list(accommodation.values()), default=list(accommodation.values()))
+        selected_categories = [k for k, v in accommodation.items() if v in selected]
+    elif category_group == "Entertainment":
+        selected = st.multiselect("Select Entertainment Types", list(entertainment.values()), default=list(entertainment.values()))
+        selected_categories = [k for k, v in entertainment.items() if v in selected]
+    elif category_group == "Tourism":
+        selected = st.multiselect("Select Tourism Activities", list(tourism.values()), default=list(tourism.values()))
+        selected_categories = [k for k, v in tourism.items() if v in selected]
+    elif category_group == "Commercial":
+        selected = st.multiselect("Select Commercial Types", list(commercial.values()), default=list(commercial.values()))
+        selected_categories = [k for k, v in commercial.items() if v in selected]
+    elif category_group == "Parks":
+        selected = st.multiselect("Select Parks", list(parks.values()), default=list(parks.values()))
+        selected_categories = [k for k, v in parks.items() if v in selected]
     else:
-        selected = st.multiselect(f"Select {category_group} Types", list(categories[category_group.lower()].values()))
-        selected_categories = [k for k, v in categories[category_group.lower()].items() if v in selected] if len(selected) > 0 else [k for k, v in categories[category_group.lower()].items() if True]
+        selected_categories = []
 
     # Form for city and radius input
     with st.form("poi_search_form"):
