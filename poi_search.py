@@ -116,6 +116,8 @@ def main():
         pois_response = get_pois(lat, lon, radius_meters, GEOAPIFY_API_KEY, selected_categories)
         pois = pois_response.get("features", [])
 
+        print(pois)
+
         if not pois:
             st.warning("No POIs found for this location.")
             return
@@ -131,6 +133,7 @@ def main():
             try:
                 map_df = [{
                     "name": poi["properties"].get("name", "Unnamed"),
+                    "address": poi["properties"].get("address_line2", ""),
                     "lat": poi["properties"]["lat"],
                     "lon": poi["properties"]["lon"]
                 } for poi in pois if "lat" in poi["properties"] and "lon" in poi["properties"]]
@@ -152,7 +155,7 @@ def main():
                         pitch=0
                     )
 
-                    st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view, tooltip={"text": "{name}"}))
+                    st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view,tooltip={"html": "{name}<br/>{address}"}))
                 else:
                     st.warning("Map data not available for these POIs.")
             except Exception as e:
