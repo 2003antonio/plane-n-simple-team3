@@ -12,7 +12,33 @@ def main():
     st.markdown("<h3 style='text-align: center;'>Find airports and book flights with ease!</h3>", unsafe_allow_html=True)
 
     st.write("### Welcome to Plane N Simple!")
-    st.write("Explore flights and entertainment easily! Use the navigation menu to access flight search and profile settings.")
+
+    st.write("""
+    Plane N Simple is a streamlined travel assistant designed to help users search and compare real-time flights across thousands of global airports using **Amadeus API** data. It provides a user-friendly interface for planning air travel, discovering airport information, and exploring entertainment options around your destination.
+
+    We also use the **Geoapify Places API** to retrieve **Points of Interest (POIs)** — such as restaurants, entertainment venues, and attractions — located near the user’s selected airport or city.
+
+    #### 🧠 Project Overview
+    This web-based application was developed with modern frontend and backend technologies to simulate a real-world travel planning platform. It enables the user to interact with live APIs, sort through useful data efficiently, and navigate a seamless interface. The goal was to design a scalable, intuitive, and robust travel planner that incorporates both functionality and aesthetics.
+
+    #### 🚀 Key Features
+    - 🔍 **Flight Search**: Look up flights by selecting departure and arrival airports and choosing a travel date.
+    - ⚙️ **Flight Sorting**: Sort results by price (low-high, high-low), departure time, arrival time, or airline name.
+    - 📍 **Airport Map**: View a full map of supported airports with hoverable locations using PyDeck.
+    - ✅ **Strict Match**: Filter only flights that strictly match the selected origin and destination.
+    - 🗺️ **POI Search (via Geoapify API)**: Discover nearby attractions and services near your destination airport.
+    - 🔐 **Reset Password**: Forgot your password? No problem — users can securely reset it through the profile page.
+    - 🛠️ **Admin Panel** *(for authorized users)*: Access backend functions for managing analytics and user settings.
+
+    #### 👨‍💻 Meet the Developers
+    - **Joshua Rios** implemented the flight sorting feature and polished the overall UI for intuitive interactions.
+    - **Barbara Garcia** integrated the **Amadeus Flight API** and managed API authentication and error handling.
+    - **Nicholas Juman** developed the **POI Search** functionality using **Geoapify** for location-based results.
+    - **Danielle Maki** implemented the **Admin Control functionality** and conducted **database research** for future scalability and data persistence.
+    - **Antonio Martinez** contributed to backend logic, testing, and debugging to ensure the site performs smoothly.
+
+    We built this project as part of **Team 3 - CEN 4010 Software Engineering**, aiming to model a professional-grade web application with clear documentation, modular code, and thoughtful user-centered design.
+    """)
 
     csv_file = "airports.csv"
     df = pd.read_csv(csv_file)
