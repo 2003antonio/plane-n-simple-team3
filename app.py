@@ -11,8 +11,14 @@ import flight_search
 import profile_page
 import poi_search 
 
-# Page config
-st.set_page_config(page_title="Plane N Simple", layout="wide")
+# Page config with tab title, emoji, and wide layout
+st.set_page_config(
+    page_title="plane-n-simple",
+    layout="wide",
+    page_icon="✈️",
+    initial_sidebar_state="auto"
+)
+
 
 # Safe Firebase config handling
 try:
