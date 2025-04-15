@@ -11,8 +11,12 @@ def load_airports():
     return df
 
 def get_amadeus_token():
-    client_id = st.secrets["amadeus"]["client_id"]
-    client_secret = st.secrets["amadeus"]["client_secret"]
+    try:
+        client_id = st.secrets["amadeus"]["client_id"]
+        client_secret = st.secrets["amadeus"]["client_secret"]
+    except KeyError as e:
+        st.error(f"🔐 Missing Amadeus credentials: {e}")
+        return None
 
     url = "https://test.api.amadeus.com/v1/security/oauth2/token"
     payload = {
@@ -21,13 +25,17 @@ def get_amadeus_token():
         "client_secret": client_secret
     }
 
-    res = requests.post(url, data=payload)
-
-    if res.status_code == 200:
-        return res.json()["access_token"]
-    else:
-        st.error("❌ Failed to fetch Amadeus token")
+    try:
+        res = requests.post(url, data=payload)
+        if res.status_code == 200:
+            return res.json()["access_token"]
+        else:
+            st.error(f"❌ Failed to fetch Amadeus token: {res.status_code} - {res.text}")
+            return None
+    except requests.RequestException as e:
+        st.error(f"🚨 Error connecting to Amadeus: {e}")
         return None
+
 
 def search_amadeus_flights(origin_code, dest_code, travel_date):
     token = get_amadeus_token()

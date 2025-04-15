@@ -14,33 +14,31 @@ import poi_search
 # Page config
 st.set_page_config(page_title="Plane N Simple", layout="wide")
 
-# Firebase Config from Streamlit secrets
+# Safe Firebase config handling
 try:
     firebase_config = st.secrets["firebase"]
-    st.toast("✅ Firebase config loaded.")
+    FIREBASE_API_KEY = firebase_config["apiKey"]
+    FIREBASE_DB_URL = firebase_config["databaseURL"]
+
+    if not firebase_admin._apps:
+        cred = credentials.Certificate({
+            "type": firebase_config["type"],
+            "project_id": firebase_config["project_id"],
+            "private_key_id": firebase_config["private_key_id"],
+            "private_key": firebase_config["private_key"],
+            "client_email": firebase_config["client_email"],
+            "auth_uri": firebase_config["auth_uri"],
+            "token_uri": firebase_config["token_uri"],
+            "auth_provider_x509_cert_url": firebase_config["auth_provider_x509_cert_url"],
+            "client_x509_cert_url": firebase_config["client_x509_cert_url"]
+        })
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': FIREBASE_DB_URL
+        })
+
 except Exception as e:
-    st.error(f"❌ Firebase config failed: {e}")
+    st.error("🚨 Critical error: Firebase secrets are missing or misconfigured.")
     st.stop()
-
-FIREBASE_API_KEY = firebase_config["apiKey"]
-FIREBASE_DB_URL = firebase_config["databaseURL"]
-
-# Initialize Firebase Admin
-if not firebase_admin._apps:
-    cred = credentials.Certificate({
-        "type": firebase_config["type"],
-        "project_id": firebase_config["project_id"],
-        "private_key_id": firebase_config["private_key_id"],
-        "private_key": firebase_config["private_key"],
-        "client_email": firebase_config["client_email"],
-        "auth_uri": firebase_config["auth_uri"],
-        "token_uri": firebase_config["token_uri"],
-        "auth_provider_x509_cert_url": firebase_config["auth_provider_x509_cert_url"],
-        "client_x509_cert_url": firebase_config["client_x509_cert_url"]
-    })
-    firebase_admin.initialize_app(cred, {
-        'databaseURL': FIREBASE_DB_URL
-    })
 
 # Firebase Auth API endpoints
 def firebase_login(email, password):
@@ -60,7 +58,6 @@ def firebase_reset_password(email):
     payload = {"requestType": "PASSWORD_RESET", "email": email}
     res = requests.post(url, json=payload)
     return res.json()
-
 
 # Session state
 if "login" not in st.session_state:
@@ -90,11 +87,25 @@ def login_form():
                 st.error(result.get("error", {}).get("message", "Login failed"))
 
         if reset:
-            result = firebase_reset_password(email)
-            if "email" in result:
-                st.success(f"Password reset email sent to {email}!")
+            # Check if email exists in Firebase DB under /users
+            users_ref = realtimedb.reference("users")
+            users_data = users_ref.get()
+
+            email_exists = False
+            if users_data:
+                for uid, user_info in users_data.items():
+                    if user_info.get("email") == email:
+                        email_exists = True
+                        break
+
+            if email_exists:
+                result = firebase_reset_password(email)
+                if "email" in result:
+                    st.success(f"Password reset email sent to {email}!")
+                else:
+                    st.error(result.get("error", {}).get("message", "Password reset failed"))
             else:
-                st.error(result.get("error", {}).get("message", "Password reset failed"))
+                st.error("❌ This email is not registered in our system.")
 
 # Signup Form
 def signup_form():
@@ -117,7 +128,6 @@ def signup_form():
                 st.success("Account created! You can log in now.")
             else:
                 st.error(result.get("error", {}).get("message", "Signup failed"))
-
 
 # Auth flow
 if not st.session_state.login:

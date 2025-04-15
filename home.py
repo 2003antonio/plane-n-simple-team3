@@ -31,49 +31,52 @@ def main():
     - 🛠️ **Admin Panel** *(for authorized users)*: Access backend functions for managing analytics and user settings.
 
     #### 👨‍💻 Meet the Developers
-    - **Joshua Rios** implemented the flight sorting feature and polished the overall UI for intuitive interactions.
-    - **Barbara Garcia** integrated the **Amadeus Flight API** and managed API authentication and error handling.
+    - **Joshua Rios** implemented the **flight sorting & filtering** feature and polished Flight Search and the Home page for smooth and intuitive interactions.
+    - **Barbara Garcia** integrated the **Amadeus Flight API** and managed API authentication and error handling for Flight Search.
     - **Nicholas Juman** developed the **POI Search** functionality using **Geoapify** for location-based results.
     - **Danielle Maki** implemented the **Admin Control functionality** and conducted **database research** for future scalability and data persistence.
-    - **Antonio Martinez** contributed to backend logic, testing, and debugging to ensure the site performs smoothly.
+    - **Antonio Martinez** lead developer and architect behind the Plane N Simple App. Contributed to Firebase integration, login, logout, feature testing, website deployment, and overall UI design to ensure the site is functional and intuitive.
 
     We built this project as part of **Team 3 - CEN 4010 Software Engineering**, aiming to model a professional-grade web application with clear documentation, modular code, and thoughtful user-centered design.
     """)
 
-    csv_file = "airports.csv"
-    df = pd.read_csv(csv_file)
+    try:
+        csv_file = "airports.csv"
+        df = pd.read_csv(csv_file)
 
-    with st.expander("📍 All Airlines Supported by Us!"):
-        st.write("Hover over a point to see the airport name.")
+        with st.expander("📍 All Airlines Supported by Us!"):
+            st.write("Hover over a point to see the airport name.")
 
-        # create a layer for airport markers
-        layer = pdk.Layer(
-            "ScatterplotLayer",
-            data=df,
-            get_position=["longitude", "latitude"],
-            get_color=[255, 0, 0, 150],
-            get_radius=20000,
-            pickable=True,
-        )
+            layer = pdk.Layer(
+                "ScatterplotLayer",
+                data=df,
+                get_position=["longitude", "latitude"],
+                get_color=[255, 0, 0, 150],
+                get_radius=20000,
+                pickable=True,
+            )
 
-        tooltip = {
-            "html": "<b>{name}</b>",
-            "style": {"backgroundColor": "white", "color": "black"},
-        }
+            tooltip = {
+                "html": "<b>{name}</b>",
+                "style": {"backgroundColor": "white", "color": "black"},
+            }
 
-        map = pdk.Deck(
-            map_style="mapbox://styles/mapbox/light-v9",
-            initial_view_state=pdk.ViewState(
-                latitude=df["latitude"].mean(),
-                longitude=df["longitude"].mean(),
-                zoom=3,
-                pitch=0,
-            ),
-            layers=[layer],
-            tooltip=tooltip,
-        )
+            map = pdk.Deck(
+                map_style="mapbox://styles/mapbox/light-v9",
+                initial_view_state=pdk.ViewState(
+                    latitude=df["latitude"].mean(),
+                    longitude=df["longitude"].mean(),
+                    zoom=3,
+                    pitch=0,
+                ),
+                layers=[layer],
+                tooltip=tooltip,
+            )
 
-        st.pydeck_chart(map)
+            st.pydeck_chart(map)
+
+    except Exception as e:
+        st.warning(f"⚠️ Unable to load airport map: {e}")
 
 if __name__ == "__main__":
     main()
