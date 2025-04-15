@@ -116,8 +116,6 @@ def main():
         pois_response = get_pois(lat, lon, radius_meters, GEOAPIFY_API_KEY, selected_categories)
         pois = pois_response.get("features", [])
 
-        print(pois)
-
         if not pois:
             st.warning("No POIs found for this location.")
             return

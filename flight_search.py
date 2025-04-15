@@ -148,6 +148,7 @@ def main():
 
         for offer in flights:
             segment = offer["itineraries"][0]["segments"][0]
+            text_color = st.get_option("theme.textColor")
             dep_code = segment["departure"]["iataCode"]
             arr_code = segment["arrival"]["iataCode"]
             dep_time = segment["departure"]["at"]
@@ -160,12 +161,12 @@ def main():
 
             with st.container():
                 st.markdown(f"""
-                <div style=\"border: 1px solid #ccc; border-radius: 12px; padding: 15px; margin-bottom: 10px; background-color: #f9f9f9;\">
-                    <h4 style=\"margin: 0;\">🛫 {dep_code} → 🛬 {arr_code}</h4>
-                    <p style=\"margin: 5px 0;\"><strong>Airline:</strong> {airline} &nbsp; | &nbsp; <strong>Aircraft:</strong> {aircraft}</p>
-                    <p style=\"margin: 5px 0;\"><strong>Departure:</strong> {dep_time} &nbsp; | &nbsp; <strong>Arrival:</strong> {arr_time}</p>
-                    <p style=\"margin: 5px 0;\"><strong>Duration:</strong> {duration}</p>
-                    <p style=\"margin: 5px 0; font-size: 1.2em;\"><strong>💲Price:</strong> {price} {currency}</p>
+                <div style=\"border: 1px solid #ccc; border-radius: 12px; padding: 15px; margin-bottom: 10px\">
+                    <h4 style=\"margin: 0; color: {text_color}\">🛫 {dep_code} → 🛬 {arr_code}</h4>
+                    <p style=\"margin: 5px 0; color: {text_color}\"><strong>Airline:</strong> {airline} &nbsp; | &nbsp; <strong>Aircraft:</strong> {aircraft}</p>
+                    <p style=\"margin: 5px 0; color: {text_color}\"><strong>Departure:</strong> {dep_time} &nbsp; | &nbsp; <strong>Arrival:</strong> {arr_time}</p>
+                    <p style=\"margin: 5px 0; color: {text_color}\"><strong>Duration:</strong> {duration}</p>
+                    <p style=\"margin: 5px 0; color: {text_color} font-size: 1.2em;\"><strong>💲Price:</strong> {price} {currency}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
