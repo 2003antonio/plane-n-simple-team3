@@ -153,14 +153,14 @@ else:
         st.write(f"Logged in as: {name}")
 
     with st.sidebar:
-        if st.button("Logout of Account 🚪"):
+        if st.button("Logout of Account"):
             for key in ["login", "email", "uid"]:
                 st.session_state.pop(key, None)
             st.rerun()
 
         # Adjust menu dynamically
         menu_options = ["Home", "Travel Plans", "Flight Search", "POI Search", "Profile"]
-        menu_icons = ["house", "search", "map", "person-circle"]
+        menu_icons = ["house", "book", "search", "map", "person-circle"]
 
         if is_admin:
             menu_options.append("Admin")
