@@ -48,7 +48,7 @@ def main():
         else:
             st.info("🌍 No actions taken yet. Flip a few switches to make the magic happen.")
 
-        # 📋 Display All Users from Firebase
+        # 📋 Display All Users
         st.subheader("👥 User Accounts Overview")
 
         all_users_ref = realtimedb.reference("users").get()
@@ -66,8 +66,22 @@ def main():
 
             df = pd.DataFrame(users_data)
             st.dataframe(df, use_container_width=True)
+
+            # 🔲 Bordered section for deletion control
+            with st.container(border=True):
+                selected_user = st.selectbox("👤 Select user UID to delete:", df["UID"])
+
+                with st.expander("❗ Danger Zone: Account Deletion", expanded=False):
+                    if selected_user:
+                        st.warning(f"⚠️ You are about to delete the account with UID: `{selected_user}`. This action is irreversible.")
+                        if st.button("🚨 Confirm Delete"):
+                            try:
+                                realtimedb.reference(f"users/{selected_user}").delete()
+                                st.success(f"✅ User `{selected_user}` has been deleted.")
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"❌ Failed to delete user: {e}")
         else:
             st.info("No user accounts found in the database.")
-
     else:
         st.error("🚫 Sorry, you do not have permission to view this page. You must have admin privileges.")
