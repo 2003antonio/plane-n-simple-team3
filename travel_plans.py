@@ -40,18 +40,8 @@ def delete_item_from_plan(uid, plan_name, item_type, index):
     except Exception as e:
         st.error(f"❌ Failed to delete item from plan: {e}")
 
-        
-def debug_show_root():
-    st.subheader("🪵 Firebase Root Debug")
-    try:
-        root_data = db.reference("/").get()
-        st.json(root_data)
-    except Exception as e:
-        st.error(f"❌ Failed to read Firebase root: {e}")
-
 
 def main():
-    #debug_show_root()
     st.title("📘 Your Travel Plans")
 
     uid = st.session_state.get("uid")
@@ -61,7 +51,6 @@ def main():
 
     travel_plans = get_user_plans(uid)
 
-    # Create new plan
     with st.expander(label="Create a New Travel Plan", icon="➕"):
         new_plan_name = st.text_input("Plan Name", key="new_plan_name")
         if st.button("Create Plan"):
@@ -73,13 +62,6 @@ def main():
 
     for plan_name, plan in travel_plans.items():
         plan = json.loads(plan)
-        #if isinstance(plan, dict):
-            #st.warning(f"⚠️ Skipping malformed plan: {plan_name}")
-            #if st.button(f"🗑 Delete malformed plan '{plan_name}'", key=f"del_bad_plan_{plan_name}"):
-                #db.reference(f"travel_plans/{uid}/{plan_name}").delete()
-                #st.success(f"✅ Deleted malformed plan: {plan_name}")
-                #st.rerun()
-            #continue
 
         with st.expander(label=plan_name, icon="📍"):
             col1, col2 = st.columns([5, 1])

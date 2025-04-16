@@ -139,7 +139,6 @@ def login_form():
             else:
                 st.error("❌ This email is not registered in our system.")
 
-    # 2FA Verification (if already enabled)
     elif st.session_state.get("show_2fa_login"):
         st.warning("🔐 Two-Factor Authentication Required")
 
@@ -154,7 +153,6 @@ def login_form():
                 st.session_state.email = st.session_state.pending_email
                 st.session_state.uid = st.session_state.pending_uid
 
-                # Cleanup
                 for key in ["show_2fa_login", "pending_uid", "pending_email", "twofa_secret"]:
                     st.session_state.pop(key, None)
 
@@ -163,7 +161,6 @@ def login_form():
             else:
                 st.error("❌ Invalid 2FA code. Please try again.")
 
-    # 2FA Setup During Login (if not yet configured)
     elif st.session_state.get("setup_2fa_login"):
         st.warning("🚨 2FA is not set up for this account. Let's fix that.")
 
@@ -218,7 +215,6 @@ def signup_form():
                 uid = result["localId"]
                 twofa_secret = pyotp.random_base32()
 
-                # Save to DB
                 realtimedb.reference(f"users/{uid}").set({
                     "email": email,
                     "full_name": full_name,
@@ -227,7 +223,6 @@ def signup_form():
                     "twofa_secret": twofa_secret
                 })
 
-                # Save secret and email to session
                 st.session_state.show_2fa_qr = True
                 st.session_state.twofa_secret = twofa_secret
                 st.session_state.new_user_email = email
@@ -236,7 +231,6 @@ def signup_form():
                 st.error(result.get("error", {}).get("message", "Signup failed"))
 
     else:
-        # Show QR and verification form
         st.success("✅ Account created successfully!")
 
         totp = pyotp.TOTP(st.session_state.twofa_secret)
@@ -258,7 +252,6 @@ def signup_form():
         if verify_btn:
             if totp.verify(token):
                 st.success("🎉 2FA code verified successfully! You can now log in.")
-                # Optional: reset 2FA state
                 st.session_state.show_2fa_qr = False
                 st.session_state.twofa_secret = None
                 st.session_state.new_user_email = ""
@@ -283,7 +276,6 @@ else:
         is_admin = user_data.get("admin", False) if user_data else False
         st.write(f"Logged in as: {name}")
 
-    # 🔐 2FA Setup Prompt for users who don't have it enabled
     if user_data and "twofa_secret" not in user_data:
         st.warning("🚨 You have not enabled Two-Factor Authentication (2FA).")
 
