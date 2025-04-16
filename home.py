@@ -57,8 +57,8 @@ def main():
             )
 
             tooltip = {
-                "html": "<b>{name}</b>",
-                "style": {"backgroundColor": "white", "color": "black"},
+                "html": "<b>{name}</b><br/><b>{iata_code}</b><br/><b>{latitude}, {longitude}</b>",
+                "style": {"backgroundColor": "white", "color": "#404040", "border-radius": "10px", "padding": "10px 15px"},
             }
 
             map = pdk.Deck(

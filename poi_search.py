@@ -2,6 +2,8 @@ import streamlit as st
 import requests
 import math
 import pydeck as pdk
+from firebase_admin import db
+import json
 
 def get_city_coordinates(city, api_key):
     try:
@@ -42,6 +44,10 @@ def main():
     st.title("📍 Plane N Simple: POI Search")
     st.markdown("Find cool places near your destination using Geoapify APIs!")
 
+    uid = st.session_state.get("uid")
+    travel_plans = db.reference(f"travel_plans/{uid}").get() or {}
+    plan_names = list(travel_plans.keys())
+
     try:
         GEOAPIFY_API_KEY = st.secrets["geoapify"]["api_key"]
     except Exception as e:
@@ -50,96 +56,122 @@ def main():
 
     st.markdown("## 🔍 Select Points of Interest")
 
-    # Category mappings
-    accommodation = {
-        "accommodation.hotel": "Hotel",
-        "accommodation.hostel": "Hostel",
-        "accommodation.motel": "Motel"
-    }
-    entertainment = {
-        "catering": "Catering",
-        "entertainment": "Entertainment"
-    }
-    tourism = {
-        "tourism": "Tourism",
-        "activity": "Activity",
-        "leisure": "Leisure"
-    }
-    commercial = {
-        "commercial": "Commercial"
-    }
-    parks = {
-        "national_park": "National Park"
+    categories = {
+        "accommodation": {
+            "accommodation.hotel": "Hotel",
+            "accommodation.hostel": "Hostel",
+            "accommodation.motel": "Motel"
+        },
+        "entertainment": {
+            "catering": "Catering",
+            "entertainment": "Entertainment"
+        },
+        "tourism": {
+            "tourism": "Tourism",
+            "activity": "Activity",
+            "leisure": "Leisure"
+        },
+        "commercial": {
+            "commercial": "Commercial"
+        },
+        "parks": {
+            "national_park": "National Park"
+        }
     }
 
-    # Category group selector (outside form so it refreshes)
-    prev_selection = st.session_state.get("category_group", None)
     category_group = st.radio(
         "Select a category group",
-        ("Accommodation", "Entertainment", "Tourism", "Commercial", "Parks"),
+        ("All", "Accommodation", "Entertainment", "Tourism", "Commercial", "Parks"),
         key="category_group"
     )
 
-    if prev_selection is not None and category_group != prev_selection:
-        st.rerun()
-
-    if category_group == "Accommodation":
-        selected = st.multiselect("Select Accommodation Types", list(accommodation.values()), default=list(accommodation.values()))
-        selected_categories = [k for k, v in accommodation.items() if v in selected]
-    elif category_group == "Entertainment":
-        selected = st.multiselect("Select Entertainment Types", list(entertainment.values()), default=list(entertainment.values()))
-        selected_categories = [k for k, v in entertainment.items() if v in selected]
-    elif category_group == "Tourism":
-        selected = st.multiselect("Select Tourism Activities", list(tourism.values()), default=list(tourism.values()))
-        selected_categories = [k for k, v in tourism.items() if v in selected]
-    elif category_group == "Commercial":
-        selected = st.multiselect("Select Commercial Types", list(commercial.values()), default=list(commercial.values()))
-        selected_categories = [k for k, v in commercial.items() if v in selected]
-    elif category_group == "Parks":
-        selected = st.multiselect("Select Parks", list(parks.values()), default=list(parks.values()))
-        selected_categories = [k for k, v in parks.items() if v in selected]
+    if category_group == "All":
+        selected_categories = None
     else:
-        selected_categories = []
+        selected = st.multiselect(f"Select {category_group} Types", list(categories[category_group.lower()].values()))
+        selected_categories = [k for k, v in categories[category_group.lower()].items() if v in selected] if selected else list(categories[category_group.lower()].keys())
 
-    # Form for city and radius input
     with st.form("poi_search_form"):
         city = st.text_input("Enter a city (e.g., Miami)")
         radius_miles = st.selectbox("Search radius (miles)", [5, 10, 20, 50], index=1)
         filter_button = st.form_submit_button("Filter")
 
     if filter_button:
-        if not city:
-            st.warning("Please enter a city name.")
-            return
-
-        st.info(f"📍 Looking up coordinates for **{city}**...")
         lat, lon = get_city_coordinates(city, GEOAPIFY_API_KEY)
         if lat is None or lon is None:
-            st.warning(f"⚠️ Could not find coordinates for {city}.")
             return
-
-        st.success(f"Coordinates for {city}: ({lat}, {lon})")
-        st.info("📡 Searching for nearby points of interest...")
 
         radius_meters = radius_miles * 1609.34
-        pois_response = get_pois(lat, lon, radius_meters, GEOAPIFY_API_KEY, selected_categories)
-        pois = pois_response.get("features", [])
+        response = get_pois(lat, lon, radius_meters, GEOAPIFY_API_KEY, selected_categories)
+        pois = response.get("features", [])
 
-        if not pois:
-            st.warning("No POIs found for this location.")
-            return
+        st.session_state.pois = pois
+        st.session_state.city = city
+        st.session_state.lat = lat
+        st.session_state.lon = lon
+
+    added_plan_feedback = {}
+
+    if "pending_poi_add" in st.session_state:
+        data = st.session_state.pop("pending_poi_add")
+        plan_ref = db.reference(f"travel_plans/{uid}/{data['plan']}")
+        raw_plan = plan_ref.get()
+
+        try:
+            plan = json.loads(raw_plan) if isinstance(raw_plan, str) else raw_plan
+        except Exception:
+            plan = {"flights": [], "pois": []}
+
+        plan["pois"].append({
+            "name": data["name"],
+            "category": data["category"]
+        })
+
+        plan_ref.set(json.dumps(plan))
+        added_plan_feedback[data["name"] + data["category"]] = data["plan"]
+
+    if "pois" in st.session_state:
+        pois = st.session_state.pois
+        city = st.session_state.city
+        lat = st.session_state.lat
+        lon = st.session_state.lon
 
         st.markdown(f"### 🧭 Points of Interest near {city}:")
-        for poi in pois:
+        for idx, poi in enumerate(pois):
             props = poi.get("properties", {})
             name = props.get("name", "Unnamed Place")
             category = props.get("categories", ["Unknown"])[0].split("/")[-1]
-            st.markdown(f"- **{name}** ({category})")
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.markdown(f"- **{name}** ({category})")
+            with col3:
+                with st.expander("➕ Add to Travel Plan"):
+                    plan_key = f"plan_select_{idx}"
+                    if plan_key not in st.session_state:
+                        st.session_state[plan_key] = plan_names[0] if plan_names else None
+
+                    selected_plan = st.selectbox("Select a Plan", plan_names, key=plan_key)
+
+                    if st.button("Add to Plan", key=f"add_btn_{idx}"):
+                        st.session_state["pending_poi_add"] = {
+                            "name": name,
+                            "category": category,
+                            "plan": selected_plan
+                        }
+
+                        st.rerun()
+
+                    key = name + category
+                    if key in added_plan_feedback:
+                        st.success(f"✅ POI added to '{added_plan_feedback[key]}'!")
 
         with st.expander("🗺️ View POIs on Map"):
             try:
                 map_df = [{
                     "name": poi["properties"].get("name", "Unnamed"),
+                    "address": poi["properties"].get("address_line2", ""),
                     "lat": poi["properties"]["lat"],
                     "lon": poi["properties"]["lon"]
                 } for poi in pois if "lat" in poi["properties"] and "lon" in poi["properties"]]
@@ -161,7 +193,7 @@ def main():
                         pitch=0
                     )
 
-                    st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view, tooltip={"text": "{name}"}))
+                    st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view, tooltip={"html": "{name}<br/>{address}"}))
                 else:
                     st.warning("Map data not available for these POIs.")
             except Exception as e:

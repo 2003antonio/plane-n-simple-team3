@@ -7,6 +7,7 @@ import pandas as pd
 
 # Internal modules
 import home
+import travel_plans
 import flight_search
 import profile_page
 import poi_search 
@@ -158,7 +159,7 @@ else:
             st.rerun()
 
         # Adjust menu dynamically
-        menu_options = ["Home", "Flight Search", "POI Search", "Profile"]
+        menu_options = ["Home", "Travel Plans", "Flight Search", "POI Search", "Profile"]
         menu_icons = ["house", "search", "map", "person-circle"]
 
         if is_admin:
@@ -176,6 +177,8 @@ else:
     # Page Routing
     if selected == "Home":
         home.main()
+    elif selected == "Travel Plans":
+        travel_plans.main()
     elif selected == "Flight Search":
         flight_search.main()
     elif selected == "POI Search":
