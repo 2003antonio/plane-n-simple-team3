@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import date
+from firebase_admin import db
+import json
 
 def load_airports():
     df = pd.read_csv("airports.csv")
@@ -79,6 +81,10 @@ def main():
     st.title("✈️ Plane N Simple: Flight Search")
     st.markdown("Search and compare real-time flights via Amadeus API")
 
+    uid = st.session_state.get("uid")
+    travel_plans = db.reference(f"travel_plans/{uid}").get() or {}
+    plan_names = list(travel_plans.keys())
+
     try:
         airports_df = load_airports()
     except Exception as e:
@@ -146,29 +152,38 @@ def main():
             reverse = sort_option in ["Price: High to Low", "Departure: Latest", "Arrival: Latest"]
             flights.sort(key=get_sort_key(sort_option), reverse=reverse)
 
-        for offer in flights:
+        for idx, offer in enumerate(flights):
             segment = offer["itineraries"][0]["segments"][0]
-            text_color = st.get_option("theme.textColor")
-            dep_code = segment["departure"]["iataCode"]
-            arr_code = segment["arrival"]["iataCode"]
-            dep_time = segment["departure"]["at"]
-            arr_time = segment["arrival"]["at"]
-            airline = segment.get("carrierCode", "Unknown Airline")
-            duration = segment.get("duration", "N/A")
-            aircraft = segment.get("aircraft", {}).get("code", "N/A")
-            price = offer["price"]["total"]
-            currency = offer["price"]["currency"]
+            departure = segment["departure"]
+            arrival = segment["arrival"]
+            summary = f"<span style=\"font-size: 24px\">🛫 {departure['iataCode']} → 🛬 {arrival['iataCode']} ({segment.get('carrierCode')} | {segment.get('aircraft', {}).get('code', 'N/A')})</span>"
 
-            with st.container():
-                st.markdown(f"""
-                <div style=\"border: 1px solid #ccc; border-radius: 12px; padding: 15px; margin-bottom: 10px\">
-                    <h4 style=\"margin: 0; color: {text_color}\">🛫 {dep_code} → 🛬 {arr_code}</h4>
-                    <p style=\"margin: 5px 0; color: {text_color}\"><strong>Airline:</strong> {airline} &nbsp; | &nbsp; <strong>Aircraft:</strong> {aircraft}</p>
-                    <p style=\"margin: 5px 0; color: {text_color}\"><strong>Departure:</strong> {dep_time} &nbsp; | &nbsp; <strong>Arrival:</strong> {arr_time}</p>
-                    <p style=\"margin: 5px 0; color: {text_color}\"><strong>Duration:</strong> {duration}</p>
-                    <p style=\"margin: 5px 0; color: {text_color} font-size: 1.2em;\"><strong>💲Price:</strong> {price} {currency}</p>
-                </div>
-                """, unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown(f"**{summary}**", unsafe_allow_html=True)
+                st.markdown(f"Departure: {departure['at']}  ")
+                st.markdown(f"Arrival: {arrival['at']}  ")
+                st.markdown(f"Duration: {segment.get('duration', 'N/A')}  ")
+                st.markdown(f"💲Price: {offer['price']['total']} {offer['price']['currency']}")
+
+                with st.expander("➕ Add to Travel Plan"):
+                    selected_plan = st.selectbox("Select a Plan", plan_names, key=f"plan_select_{idx}")
+                    if st.button("Add to Plan", key=f"add_btn_{idx}"):
+                        flight_data = {
+                            "from": departure["iataCode"],
+                            "to": arrival["iataCode"],
+                            "airline": segment.get("carrierCode"),
+                            "aircraft": segment.get("aircraft", {}).get("code", "N/A"),
+                            "departure": departure["at"],
+                            "arrival": arrival["at"],
+                            "duration": segment.get("duration", "N/A"),
+                            "price": offer["price"]["total"] + " " + offer["price"]["currency"]
+                        }
+
+                        plan_ref = db.reference(f"travel_plans/{uid}/{selected_plan}")
+                        current_plan = json.loads(plan_ref.get())
+                        current_plan.get("flights").append(flight_data)
+                        plan_ref.set(json.dumps(current_plan))
+                        st.success(f"Flight added to '{selected_plan}'!")
 
 if __name__ == "__main__":
     main()

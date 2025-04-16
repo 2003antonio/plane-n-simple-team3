@@ -13,7 +13,8 @@ import base64
 import home
 import flight_search
 import profile_page
-import poi_search 
+import poi_search
+import travel_plans
 
 # Page config with tab title, emoji, and wide layout
 st.set_page_config(
@@ -322,8 +323,8 @@ else:
             st.rerun()
 
         # Adjust menu dynamically
-        menu_options = ["Home", "Flight Search", "POI Search", "Profile"]
-        menu_icons = ["house", "search", "map", "person-circle"]
+        menu_options = ["Home", "Travel Plans", "Flight Search", "POI Search", "Profile"]
+        menu_icons = ["house", "search", "map", "book", "person-circle"]
 
         if is_admin:
             menu_options.append("Admin")
@@ -349,3 +350,5 @@ else:
     elif selected == "Admin":
         import admin_page
         admin_page.main()
+    elif selected == "Travel Plans":
+        travel_plans.main()
